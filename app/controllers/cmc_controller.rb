@@ -1,0 +1,2 @@
+class CmcController < ApplicationController
+end
