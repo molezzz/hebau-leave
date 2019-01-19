@@ -1,6 +1,9 @@
 const { environment } = require('@rails/webpacker')
 const { resolve } = require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const fileLoader = environment.loaders.get('file')
+
+fileLoader.exclude = [resolve('app/javascript/packs/cmc/icons')]
 
 // Set nested object prop using path notation
 // environment.config.set('resolve.extensions', ['.foo', '.bar'])
@@ -32,8 +35,10 @@ environment.loaders.append('svg-loader', {
 //     include: [resolve('app/javascript/packs/cmc/icons')],
 //     options: {
 //         limit: 10000,
-//         name: utils.assetsPath('img/[name].[hash:7].[ext]')
+//         name: 'img/[name].[hash:7].[ext]'
 //     }
 // });
+
+// throw JSON.stringify(environment, null, 2)
 
 module.exports = environment
