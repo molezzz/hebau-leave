@@ -1,4 +1,5 @@
 const { environment } = require('@rails/webpacker')
+const { resolve } = require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 // Set nested object prop using path notation
@@ -20,7 +21,7 @@ environment.loaders.append('vue-loader', {
 environment.loaders.append('svg-loader', {
     test: /\.svg$/,
     loader: 'svg-sprite-loader',
-    // include: [resolve('app/javascript/packs/cmc/icons')],
+    include: [resolve('app/javascript/packs/cmc/icons')],
     options: {
       symbolId: 'icon-[name]'
     }
