@@ -1,8 +1,8 @@
 class CmcController < ApplicationController
-    skip_before_action :verify_authenticity_token
+    before_action :authenticate_admin, except: [:index]
 
-    def login
-        render json: {token: '123456'}
+    def logout
+        render json: {success: true}
     end
 
     def user_info

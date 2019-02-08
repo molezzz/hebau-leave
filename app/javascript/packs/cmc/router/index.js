@@ -70,7 +70,7 @@ export const constantRouterMap = [
       {
         path: 'admins',
         name: 'admins',
-        component: () => import('../views/form/index.vue'),
+        component: () => import('../views/dashboard/admins.vue'),
         meta: { title: '管理员', icon: 'admin' }
       }
     ]
@@ -86,7 +86,7 @@ export const constantRouterMap = [
       {
         path: 'departments',
         name: 'departments',
-        component: () => import('../views/form/index.vue'),
+        component: () => import('../views/dashboard/departments.vue'),
         meta: { title: '部门', icon: 'table' }
       },
       {
