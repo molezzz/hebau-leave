@@ -69,6 +69,9 @@
       <el-form-item label="校领导意见">
         <el-input v-model="record.leader_opinion" type="textarea"/>
       </el-form-item>
+      <el-form-item label="备注">
+        <el-input v-model="record.remark" type="textarea"/>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">保存</el-button>
         <el-button @click="onCancel">放弃</el-button>

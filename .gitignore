@@ -36,3 +36,4 @@ yarn-debug.log*
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+app/assets/fonts/source_han_sans

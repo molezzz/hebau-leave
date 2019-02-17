@@ -2,5 +2,62 @@ class Record < ApplicationRecord
     belongs_to :user
     belongs_to :approver,required: false
 
-    store :exdata, accessors: [:unit_opinion, :leader_opinion], coder: JSON
+    store :exdata, accessors: [:unit_opinion, :leader_opinion,:remark], coder: JSON
+
+    def to_pdf
+        @pdf = Prawn::Document.new
+        @pdf.font_families.update('SourceHanSans' => {
+            :normal => Rails.root.join("app/assets/fonts/source_han_sans/SourceHanSansCN-Regular.ttf"),
+            :italic => Rails.root.join("app/assets/fonts/source_han_sans/SourceHanSansCN-Regular.ttf"),
+            :bold => Rails.root.join("app/assets/fonts/source_han_sans/SourceHanSansCN-Bold.ttf"),
+            :bold_italic => Rails.root.join("app/assets/fonts/source_han_sans/SourceHanSansCN-Bold.ttf")
+        })
+        @pdf.font 'SourceHanSans'
+        @pdf.text '河北农业大学处级干部外出登记表', align: :center, size: 22, style: :bold
+        @pdf.move_down 24
+        @pdf.text "【编号】#{created_at.to_i}", align: :right
+        @pdf.move_down 12
+        @pdf.table([ 
+            [th('姓 名'),td(user.try(:realname)),th('职 务'),td(user.try(:job))],
+            [th('外出时间'),td("#{begin_at.strftime('%Y年%m月%d日')} ~ #{end_at.strftime('%Y年%m月%d日')}，共#{(end_at.to_date - begin_at.to_date).to_i + 1}天",{colspan: 3})],
+            [th('外出地点'),td(address),th('联系电话'),td(tel)],
+            [th('外出事由'),td(cause,{colspan: 3})],
+            [th('工作代管同志联系信息',{colspan: 4})],
+            [th('姓 名'),td(agent),th('职 务'),td(agent_office)],
+            [th('办公电话'),td(agent_office_tel),th('移动电话'),td(agent_mobile)],
+            [th('单位意见',{valign: :center}),td(unit_opinion,{colspan: 3, height: 100})],
+            [th('校领导 意见',{valign: :center}),td(leader_opinion,{colspan: 3, height: 100})],
+            [th('销假时间'),td(back_as_human,{colspan: 3})],
+            [th('备注',{valign: :center}),td(remark,{colspan: 3,height: 100})]
+        ],column_widths: [100,170,100,170], cell_style: { padding: 12 })
+        @pdf.move_down 12
+        @pdf.text '注：此表一式两份，一份作为财务处经费报销依据；一份交组织部登记备案。', align: :center, size: 14
+        @pdf
+    end
+
+
+    private
+
+    def back_as_human
+        if back_at && back_at <= end_at
+            "按期销假"
+        elsif back_at && back_at > end_at
+            "超期销假"
+        elsif !back_at && Time.now > end_at
+            "超期未销假"
+        else
+            ''
+        end
+    end
+
+    def td(text,options = {})
+        data = {content: text, size: 16, text_color: '666666'}.update(options)
+        @pdf.make_cell data
+    end
+
+    def th(text,options = {})
+        # {content: text, align: :center, size: 16, font_style: :bold},
+        data = {content: text, align: :center, size: 16}.update(options)
+        @pdf.make_cell data
+    end
 end

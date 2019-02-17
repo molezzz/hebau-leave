@@ -71,7 +71,7 @@
           <template slot-scope="scope">
             <el-button size="small" circle type="primary" icon="el-icon-edit" @click="editItem(scope.$index)"></el-button>
             <el-button size="small" circle type="danger" icon="el-icon-delete" @click="delItem(scope.$index)" v-if="!scope.row.bind_wechat"></el-button>
-            <el-button size="small" circle icon="el-icon-printer"></el-button>
+            <el-button size="small" circle icon="el-icon-printer" @click="downloadPDF(scope.$index)"></el-button>
           </template>  
         </el-table-column>
         <el-table-column type="expand">
@@ -196,6 +196,11 @@ export default {
     },
     removeItem(index){
       this.list.splice(index,1)
+    },
+    downloadPDF(index){
+      let row = this.list[index]
+
+      window.open(`/records/${row.id}.pdf`)
     },
     editItem(index){
       let row = this.list[index]

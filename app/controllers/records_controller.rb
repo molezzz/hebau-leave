@@ -10,6 +10,12 @@ class RecordsController < ApplicationController
   # GET /records/1
   # GET /records/1.json
   def show
+    respond_to do |format|
+      format.json { render :show }
+      format.pdf {
+        send_data @record.to_pdf.render, filename: "#{@record.user.realname}-#{@record.id}.pdf",disposition: 'inline'
+      }
+    end
   end
 
   # GET /records/new
@@ -69,6 +75,6 @@ class RecordsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def record_params
-      params.require(:record).permit(:user_id, :approver_id, :status, :begin_at, :end_at, :address, :tel, :cause, :agent, :agent_office, :agent_office_tel, :agent_mobile, :back_at, :unit_opinion, :leader_opinion)
+      params.require(:record).permit(:user_id, :approver_id, :status, :begin_at, :end_at, :address, :tel, :cause, :agent, :agent_office, :agent_office_tel, :agent_mobile, :back_at, :unit_opinion, :leader_opinion, :remark)
     end
 end

@@ -20,6 +20,8 @@ gem 'wechat'
 # 分页
 gem 'kaminari'
 gem 'ransack'
+gem 'prawn'
+gem 'prawn-table'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'mini_racer', platforms: :ruby
 
