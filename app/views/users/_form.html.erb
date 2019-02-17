@@ -1,0 +1,67 @@
+<%= form_with(model: user, local: true) do |form| %>
+  <% if user.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+      <ul>
+      <% user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :position_id %>
+    <%= form.number_field :position_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :realname %>
+    <%= form.text_field :realname %>
+  </div>
+
+  <div class="field">
+    <%= form.label :mobile %>
+    <%= form.text_field :mobile %>
+  </div>
+
+  <div class="field">
+    <%= form.label :nickname %>
+    <%= form.text_field :nickname %>
+  </div>
+
+  <div class="field">
+    <%= form.label :avatar %>
+    <%= form.text_field :avatar %>
+  </div>
+
+  <div class="field">
+    <%= form.label :password_digest %>
+    <%= form.text_field :password_digest %>
+  </div>
+
+  <div class="field">
+    <%= form.label :job %>
+    <%= form.text_field :job %>
+  </div>
+
+  <div class="field">
+    <%= form.label :exdata %>
+    <%= form.text_area :exdata %>
+  </div>
+
+  <div class="field">
+    <%= form.label :last_sign_in_at %>
+    <%= form.datetime_select :last_sign_in_at %>
+  </div>
+
+  <div class="field">
+    <%= form.label :last_sign_in_ip %>
+    <%= form.text_field :last_sign_in_ip %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

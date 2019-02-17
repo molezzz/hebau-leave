@@ -25,31 +25,6 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column label="上级部门" align="center">
-          <template slot-scope="scope">
-            <span>{{ scope.row.parent_id || '-' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="部门类型" width="160" align="center">
-          
-          <template slot-scope="scope">
-            <template v-if="scope.row.onEdit">
-              <el-select v-model="scope.row.category" placeholder="请选择">
-                
-                <el-option
-                  v-for="(item, key) in categories"
-                  :key="key"
-                  :label="item"
-                  :value="key">
-                </el-option>
-                
-              </el-select>
-            </template>
-            <template v-else>
-              {{ cateName(scope.row.category) }}
-            </template>
-          </template>
-        </el-table-column>
         <el-table-column align="center" prop="created_at" label="最后修改时间" width="250">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
@@ -80,20 +55,14 @@
 import request from '../../utils/request'
 import { dateFormat } from '../../utils/datetime'
 
-const basePath = '/departments'
+const basePath = '/positions'
 
 export default {
   data() {
     return {
       list: [],
       listLoading: true,
-      ruleForm: {},
-      categories: {
-        admin: '行政处室',
-        edu: '教学单位',
-        party: '党群部门',
-        assistant: '科研教辅'
-      }
+      ruleForm: {}
     }
   },
   filters: {
@@ -120,7 +89,6 @@ export default {
       }
       this.list.push({
         name: null,
-        category: 'edu',
         isNew: true,
         onEdit: true
       })
@@ -140,7 +108,7 @@ export default {
             url: `${basePath}${row.isNew ? '' : '/' + row.id}`,
             method: row.isNew ? 'POST' : 'PATCH',
             data: {
-              department: row
+              position: row
             }
           }).then((r)=> {
             this.$set(this.list, index, r)

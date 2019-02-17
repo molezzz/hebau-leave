@@ -48,7 +48,7 @@ export const constantRouterMap = [
       {
         path: 'records',
         name: 'records',
-        component: () => import('../views/form/index.vue'),
+        component: () => import('../views/dashboard/records.vue'),
         meta: { title: '请假记录', icon: 'calendar' }
       }
     ]
@@ -64,7 +64,7 @@ export const constantRouterMap = [
       {
         path: 'workers',
         name: 'workers',
-        component: () => import('../views/form/index.vue'),
+        component: () => import('../views/dashboard/users.vue'),
         meta: { title: '干部', icon: 'user' }
       },
       {
@@ -92,12 +92,29 @@ export const constantRouterMap = [
       {
         path: 'rank',
         name: 'rank',
-        component: () => import('../views/form/index.vue'),
+        component: () => import('../views/dashboard/positions.vue'),
         meta: { title: '职级', icon: 'tree' }
       }
     ]
   },
-
+  {
+    path: '/editor',
+    name: 'editor',
+    hidden: true,
+    redirect: 'noredirect',
+    meta: { title: '编辑器' },
+    component: Layout,
+    children: [
+      {
+        path: 'record/:id?',
+        name: 'editor_record',
+        meta: {
+          title: '编辑请假记录'
+        },
+        component: () => import('../views/form/record.vue'),
+      }
+    ]
+  },
   // {
   //   path: '/example',
   //   component: Layout,

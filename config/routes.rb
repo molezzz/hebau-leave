@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  resources :records
+  resources :users
+  resource :wechat, only: [:show, :create]
+  resources :positions
   resources :departments
   resources :admins
   post 'admin_token' => 'admin_token#create'

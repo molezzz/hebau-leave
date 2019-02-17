@@ -63,9 +63,20 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log('err' + error) // for debug
+    const res = error.response;
+
+    let message = error.message
+    let details = []
+  
+    console.log('err -> ' + error) // for debug
+    if(res.data && res.data.details){
+      for(var k in res.data.details) {
+        details.push(`${k}: ${res.data.details[k].join(';')}`)
+      }
+      message = details.join("<br>")
+    }
     Message({
-      message: error.message,
+      message: message,
       type: 'error',
       duration: 5 * 1000
     })

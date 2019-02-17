@@ -13,41 +13,85 @@
             {{ scope.row.id }}
           </template>
         </el-table-column>
-        <el-table-column label="名称">
+        <el-table-column label="姓名">
           <template slot-scope="scope">
             <template v-if="scope.row.onEdit">
-              <el-form-item prop="name" :rules="[{ required: true, message: '名称不能为空'}]">
-                <el-input v-model="scope.row.name" placeholder="请输入名称"></el-input>
+              <el-form-item prop="realname" :rules="[{ required: true, message: '真实姓名不能为空'}]">
+                <el-input v-model="scope.row.realname" placeholder="请输入真实姓名"></el-input>
               </el-form-item>
             </template>
             <template v-else>
-            {{ scope.row.name }}
+            {{ scope.row.realname }}
             </template>
           </template>
         </el-table-column>
-        <el-table-column label="上级部门" align="center">
+        <el-table-column label="手机号">
           <template slot-scope="scope">
-            <span>{{ scope.row.parent_id || '-' }}</span>
+            <template v-if="scope.row.onEdit">
+              <el-form-item prop="mobile" :rules="[{ required: true, message: '手机号不能为空'}]">
+                <el-input v-model="scope.row.mobile" placeholder="填写手机号"></el-input>
+              </el-form-item>
+            </template>
+            <template v-else>
+            {{ scope.row.mobile }}
+            </template>
           </template>
         </el-table-column>
-        <el-table-column label="部门类型" width="160" align="center">
+        <el-table-column label="岗位">
+          <template slot-scope="scope">
+            <template v-if="scope.row.onEdit">
+              <el-form-item prop="job">
+                <el-input v-model="scope.row.job" placeholder="工作岗位，例如党办主任"></el-input>
+              </el-form-item>
+            </template>
+            <template v-else>
+            {{ scope.row.job }}
+            </template>
+          </template>
+        </el-table-column>
+        <el-table-column label="所属部门" width="160" align="center">
           
           <template slot-scope="scope">
             <template v-if="scope.row.onEdit">
-              <el-select v-model="scope.row.category" placeholder="请选择">
+              <el-select v-model="scope.row.department_id" placeholder="请选择">
                 
                 <el-option
-                  v-for="(item, key) in categories"
+                  v-for="(item, key) in departments"
                   :key="key"
-                  :label="item"
-                  :value="key">
+                  :label="item.name"
+                  :value="item.id">
                 </el-option>
                 
               </el-select>
             </template>
             <template v-else>
-              {{ cateName(scope.row.category) }}
+              {{ scope.row.department ? scope.row.department.name : '-' }}
             </template>
+          </template>
+        </el-table-column>
+        <el-table-column label="级别" width="160" align="center">
+          
+          <template slot-scope="scope">
+            <template v-if="scope.row.onEdit">
+              <el-select v-model="scope.row.position_id" placeholder="请选择">
+                
+                <el-option
+                  v-for="(item, key) in positions"
+                  :key="key"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+                
+              </el-select>
+            </template>
+            <template v-else>
+              {{ scope.row.position ? scope.row.position.name : '-' }}
+            </template>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="bind_wechat" label="已绑微信" width="50">
+          <template slot-scope="scope">
+            <i class="el-icon-circle-check" style="color: #67C23A" v-if="scope.row.bind_wechat"></i>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="created_at" label="最后修改时间" width="250">
@@ -67,12 +111,18 @@
             </template>
             <template v-else>
               <el-button size="small" circle type="primary" icon="el-icon-edit" @click="editItem(scope.$index)"></el-button>
-              <el-button size="small" circle type="danger" icon="el-icon-delete" @click="delItem(scope.$index)"></el-button>
+              <el-button size="small" circle type="danger" icon="el-icon-delete" @click="delItem(scope.$index)" v-if="!scope.row.bind_wechat"></el-button>
             </template>
           </template>  
         </el-table-column>
       </el-table>
     </el-form>
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :page-count="pageInfo.total_page"
+      :current-page="pageInfo.current_page">
+    </el-pagination>
   </div>
 </template>
 
@@ -80,26 +130,31 @@
 import request from '../../utils/request'
 import { dateFormat } from '../../utils/datetime'
 
-const basePath = '/departments'
+const basePath = '/users'
 
 export default {
   data() {
     return {
       list: [],
+      pageInfo: {
+        perpage: 20,
+        current_page: null,
+        pervious_page: null,
+        next_page: null,
+        total_page: null
+      },
       listLoading: true,
       ruleForm: {},
-      categories: {
-        admin: '行政处室',
-        edu: '教学单位',
-        party: '党群部门',
-        assistant: '科研教辅'
-      }
+      positions: null,
+      departments: null
     }
   },
   filters: {
     dateFormat
   },
   created() {
+    this.loadPositions()
+    this.loadDepartments()
     this.fetchData()
   },
   methods: {
@@ -108,7 +163,8 @@ export default {
       request({
         url: basePath
       }).then(response => {
-        this.list =  response
+        this.list =  response.items
+        this.pageInfo = Object.assign(this.pageInfo, response.page_info)
         this.listLoading = false
       })
     },
@@ -119,8 +175,7 @@ export default {
         }
       }
       this.list.push({
-        name: null,
-        category: 'edu',
+        realname: null,
         isNew: true,
         onEdit: true
       })
@@ -136,11 +191,12 @@ export default {
 
       this.$refs['tableForm'].validate((valid) => {
         if(valid){
+          if(row.isNew && !row.password) row.password = row.mobile || Math.random()
           request({
             url: `${basePath}${row.isNew ? '' : '/' + row.id}`,
             method: row.isNew ? 'POST' : 'PATCH',
             data: {
-              department: row
+              user: row
             }
           }).then((r)=> {
             this.$set(this.list, index, r)
@@ -180,6 +236,8 @@ export default {
         }
       }
       this.ruleForm = row
+      this.$set(row, 'department_id', row.department ? row.department.id : null)
+      this.$set(row, 'position_id', row.position ? row.position.id : null)
       this.$set(row,'onEdit', true)
     },
     removeItem(index){
@@ -187,6 +245,22 @@ export default {
     },
     cateName(key){
       return this.categories[key] || '-'
+    },
+    loadPositions(){
+      if(this.positions) return
+      request({
+        url: '/positions'
+      }).then((data) => {
+        this.positions = data
+      })
+    },
+    loadDepartments(){
+      if(this.departments) return
+      request({
+        url: '/departments'
+      }).then((data) => {
+        this.departments = data
+      })
     }
   }
 }

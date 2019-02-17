@@ -1,0 +1,87 @@
+<%= form_with(model: record, local: true) do |form| %>
+  <% if record.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(record.errors.count, "error") %> prohibited this record from being saved:</h2>
+
+      <ul>
+      <% record.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :user_id %>
+    <%= form.number_field :user_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :approver_id %>
+    <%= form.number_field :approver_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :status %>
+    <%= form.number_field :status %>
+  </div>
+
+  <div class="field">
+    <%= form.label :begin_at %>
+    <%= form.datetime_select :begin_at %>
+  </div>
+
+  <div class="field">
+    <%= form.label :end_at %>
+    <%= form.datetime_select :end_at %>
+  </div>
+
+  <div class="field">
+    <%= form.label :address %>
+    <%= form.text_field :address %>
+  </div>
+
+  <div class="field">
+    <%= form.label :tel %>
+    <%= form.text_field :tel %>
+  </div>
+
+  <div class="field">
+    <%= form.label :cause %>
+    <%= form.text_area :cause %>
+  </div>
+
+  <div class="field">
+    <%= form.label :agent %>
+    <%= form.text_field :agent %>
+  </div>
+
+  <div class="field">
+    <%= form.label :agent_office %>
+    <%= form.text_field :agent_office %>
+  </div>
+
+  <div class="field">
+    <%= form.label :agent_office_tel %>
+    <%= form.text_field :agent_office_tel %>
+  </div>
+
+  <div class="field">
+    <%= form.label :agent_mobile %>
+    <%= form.text_field :agent_mobile %>
+  </div>
+
+  <div class="field">
+    <%= form.label :back_at %>
+    <%= form.datetime_select :back_at %>
+  </div>
+
+  <div class="field">
+    <%= form.label :exdata %>
+    <%= form.text_area :exdata %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

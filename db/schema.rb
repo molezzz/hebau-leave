@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_08_020948) do
+ActiveRecord::Schema.define(version: 2019_02_15_085326) do
 
   create_table "admins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "username"
@@ -30,6 +30,67 @@ ActiveRecord::Schema.define(version: 2019_02_08_020948) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["parent_id"], name: "index_departments_on_parent_id"
+  end
+
+  create_table "positions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "records", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "approver_id"
+    t.integer "status", default: 0
+    t.datetime "begin_at"
+    t.datetime "end_at"
+    t.string "address"
+    t.string "tel"
+    t.text "cause"
+    t.string "agent"
+    t.string "agent_office"
+    t.string "agent_office_tel"
+    t.string "agent_mobile"
+    t.datetime "back_at"
+    t.text "exdata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent"], name: "index_records_on_agent"
+    t.index ["approver_id"], name: "index_records_on_approver_id"
+    t.index ["begin_at"], name: "index_records_on_begin_at"
+    t.index ["end_at"], name: "index_records_on_end_at"
+    t.index ["user_id"], name: "index_records_on_user_id"
+  end
+
+  create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.integer "position_id"
+    t.integer "department_id"
+    t.string "realname"
+    t.string "mobile"
+    t.string "nickname"
+    t.string "avatar"
+    t.string "password_digest"
+    t.string "job"
+    t.boolean "bind_wechat", default: false, null: false
+    t.text "exdata"
+    t.datetime "last_sign_in_at"
+    t.string "last_sign_in_ip"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["department_id"], name: "index_users_on_department_id"
+    t.index ["mobile"], name: "index_users_on_mobile", unique: true
+    t.index ["position_id"], name: "index_users_on_position_id"
+    t.index ["realname"], name: "index_users_on_realname"
+  end
+
+  create_table "wechat_sessions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "openid", null: false
+    t.string "hash_store"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id"
+    t.index ["openid"], name: "index_wechat_sessions_on_openid", unique: true
+    t.index ["user_id"], name: "index_wechat_sessions_on_user_id"
   end
 
 end

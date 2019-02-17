@@ -16,6 +16,10 @@ gem 'uglifier', '>= 1.3.0'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 gem 'webpacker', '>= 4.0.x' #'~> 3.5'
 gem 'knock'
+gem 'wechat'
+# 分页
+gem 'kaminari'
+gem 'ransack'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'mini_racer', platforms: :ruby
 

@@ -30,7 +30,7 @@
       <el-table-column align="center" prop="created_at" label="创建时间" width="250">
         <template slot-scope="scope">
           <i class="el-icon-time"/>
-          <span>{{ scope.row.created_at}}</span>
+          <span>{{ scope.row.created_at | dateFormat }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -39,6 +39,7 @@
 
 <script>
 import request from '../../utils/request'
+import { dateFormat } from '../../utils/datetime'
 
 export default {
   data() {
@@ -49,6 +50,9 @@ export default {
   },
   created() {
     this.fetchData()
+  },
+  filters: {
+    dateFormat
   },
   methods: {
     fetchData() {

@@ -1,0 +1,74 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>User:</strong>
+  <%= @record.user_id %>
+</p>
+
+<p>
+  <strong>Approver:</strong>
+  <%= @record.approver_id %>
+</p>
+
+<p>
+  <strong>Status:</strong>
+  <%= @record.status %>
+</p>
+
+<p>
+  <strong>Begin at:</strong>
+  <%= @record.begin_at %>
+</p>
+
+<p>
+  <strong>End at:</strong>
+  <%= @record.end_at %>
+</p>
+
+<p>
+  <strong>Address:</strong>
+  <%= @record.address %>
+</p>
+
+<p>
+  <strong>Tel:</strong>
+  <%= @record.tel %>
+</p>
+
+<p>
+  <strong>Cause:</strong>
+  <%= @record.cause %>
+</p>
+
+<p>
+  <strong>Agent:</strong>
+  <%= @record.agent %>
+</p>
+
+<p>
+  <strong>Agent office:</strong>
+  <%= @record.agent_office %>
+</p>
+
+<p>
+  <strong>Agent office tel:</strong>
+  <%= @record.agent_office_tel %>
+</p>
+
+<p>
+  <strong>Agent mobile:</strong>
+  <%= @record.agent_mobile %>
+</p>
+
+<p>
+  <strong>Back at:</strong>
+  <%= @record.back_at %>
+</p>
+
+<p>
+  <strong>Exdata:</strong>
+  <%= @record.exdata %>
+</p>
+
+<%= link_to 'Edit', edit_record_path(@record) %> |
+<%= link_to 'Back', records_path %>
