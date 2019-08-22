@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  production:
+    build:
+      context: .
+      dockerfile: "./docker/rails/Dockerfile"
+    image: "hebau/leave"
+    # entrypoint: ./docker/rails/dev-entrypoint.sh
+    # command: --server
+    command: /bin/bash -c 'rm -f /var/leave/tmp/pids/server.pid;/var/leave/bin/rails s -e production -p 3000'
+    env_file:
+      - .env.production
+    volumes:
+      - .:/var/leave
+      - /var/leave/node_modules
+      - bundle:/bundle
+    ports:
+      - "3000:3000"
+    links:
+      - mysql:mysql.server
+      - redis:redis.server
+    depends_on:
+      - mysql
+      - redis
+    network_mode: "bridge"
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: "./Dockerfile"
+    image: "hebau/nginx"
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    environment:
+      - CERTBOT_EMAIL=329153033@qq.com
+    links:
+      - production:zzb.server
+    volumes:
+      - .:/var/leave
+  mysql:
+    image: "mysql:5.6"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "hebau-leave"
+    volumes:
+      - ./docker/mysql/db:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    network_mode: "bridge"
+  redis:
+    image: "redis:4-alpine"
+    volumes:
+      - ./docker/redis/db:/data
+    ports:
+      - "6380:6379"
+    network_mode: "bridge"
+volumes:
+  bundle:
+    driver: local

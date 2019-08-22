@@ -1,0 +1,8 @@
+# .dockerignore
+.git
+.dockerignore
+# Gemfile.lock
+deploy
+node_modules
+docker
+README.md

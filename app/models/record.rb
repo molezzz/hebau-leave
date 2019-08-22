@@ -5,6 +5,7 @@ class Record < ApplicationRecord
     store :exdata, accessors: [:unit_opinion, :leader_opinion,:remark], coder: JSON
 
     def to_pdf
+        cell_padding = 12
         @pdf = Prawn::Document.new
         @pdf.font_families.update('SourceHanSans' => {
             :normal => Rails.root.join("app/assets/fonts/source_han_sans/SourceHanSansCN-Regular.ttf"),
@@ -17,6 +18,27 @@ class Record < ApplicationRecord
         @pdf.move_down 24
         @pdf.text "【编号】#{created_at.to_i}", align: :right
         @pdf.move_down 12
+        qrcode = RQRCode::QRCode.new("inhe://records?id=#{id}", :level=>:h, :size => 5)
+        qr_file = "/tmp/hebau_reocrds_#{id}.png"
+        qrcode.as_png(
+            resize_gte_to: false,
+            resize_exactly_to: false,
+            fill: 'white',
+            color: 'black',
+            size: 75,
+            border_modules: 0,
+            module_px_size: 6,
+            file: qr_file
+        )
+        remark_table = @pdf.make_table(
+            [[td(remark),{image: qr_file}]],
+            { 
+                width: 440 - cell_padding * 2,
+                cell_style:{ borders: [], padding: 0 },
+                position: :left,
+                column_widths: {1 => 70}
+            }
+        )
         @pdf.table([ 
             [th('姓 名'),td(user.try(:realname)),th('职 务'),td(user.try(:job))],
             [th('外出时间'),td("#{begin_at.strftime('%Y年%m月%d日')} ~ #{end_at.strftime('%Y年%m月%d日')}，共#{(end_at.to_date - begin_at.to_date).to_i + 1}天",{colspan: 3})],
@@ -28,13 +50,15 @@ class Record < ApplicationRecord
             [th('单位意见',{valign: :center}),td(unit_opinion,{colspan: 3, height: 100})],
             [th('校领导 意见',{valign: :center}),td(leader_opinion,{colspan: 3, height: 100})],
             [th('销假时间'),td(back_as_human,{colspan: 3})],
-            [th('备注',{valign: :center}),td(remark,{colspan: 3,height: 100})]
-        ],column_widths: [100,170,100,170], cell_style: { padding: 12 })
+            [th('备注',{valign: :center}),@pdf.make_cell(remark_table,{colspan: 3,height: 100})]
+        ],column_widths: [100,170,100,170], cell_style: { padding: cell_padding }, position: :center)
         @pdf.move_down 12
         @pdf.text '注：此表一式两份，一份作为财务处经费报销依据；一份交组织部登记备案。', align: :center, size: 14
-        @pdf
+        data = @pdf.render
+        File.delete(qr_file) if File.exist?(qr_file)
+        data
     end
-
+ 
 
     private
 

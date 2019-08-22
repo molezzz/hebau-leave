@@ -13,7 +13,7 @@ class RecordsController < ApplicationController
     respond_to do |format|
       format.json { render :show }
       format.pdf {
-        send_data @record.to_pdf.render, filename: "#{@record.user.realname}-#{@record.id}.pdf",disposition: 'inline'
+        send_data @record.to_pdf, filename: "#{@record.user.realname}-#{@record.id}.pdf",disposition: 'inline'
       }
     end
   end
