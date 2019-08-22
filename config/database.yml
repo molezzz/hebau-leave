@@ -50,6 +50,6 @@ test:
 #
 production:
   <<: *default
-  database: hebau-leave_production
+  database: hebau-leave
   username: root
   password: <%= ENV['HEBAU-LEAVE_DATABASE_PASSWORD'] %>
