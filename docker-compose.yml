@@ -38,6 +38,7 @@ services:
       - production:zzb.server
     volumes:
       - .:/var/leave
+    network_mode: "bridge"
   mysql:
     image: "mysql:5.7"
     restart: always
