@@ -15,7 +15,7 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: root
   password: 123456
-  host: localhost
+  host: <%= ENV.fetch('HEBAU-LEAVE_DATABASE_HOST'){ 'localhost' } %>
   # socket: /tmp/mysql.sock
 
 development:
