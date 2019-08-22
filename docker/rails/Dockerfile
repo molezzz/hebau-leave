@@ -56,7 +56,8 @@ RUN RAILS_ENV=production bundle install
 
 COPY package.json ${INSTALL_PATH}/package.json
 COPY yarn.lock ${INSTALL_PATH}/yarn.lock
-RUN npm install -g webpack-cli --registry='https://registry.npm.taobao.org'
+RUN npm config set unsafe-perm true \
+	&& npm install -g webpack-cli --registry='https://registry.npm.taobao.org'
 RUN yarn config set registry 'https://registry.npm.taobao.org' \
   && yarn add -D webpack-cli \
 	&& yarn install
