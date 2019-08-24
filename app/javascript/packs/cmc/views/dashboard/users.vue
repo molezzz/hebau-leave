@@ -37,18 +37,6 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column label="岗位">
-          <template slot-scope="scope">
-            <template v-if="scope.row.onEdit">
-              <el-form-item prop="job">
-                <el-input v-model="scope.row.job" placeholder="工作岗位，例如党办主任"></el-input>
-              </el-form-item>
-            </template>
-            <template v-else>
-            {{ scope.row.job }}
-            </template>
-          </template>
-        </el-table-column>
         <el-table-column label="所属部门" width="160" align="center">
           
           <template slot-scope="scope">
@@ -66,6 +54,18 @@
             </template>
             <template v-else>
               {{ scope.row.department ? scope.row.department.name : '-' }}
+            </template>
+          </template>
+        </el-table-column>
+        <el-table-column label="职务">
+          <template slot-scope="scope">
+            <template v-if="scope.row.onEdit">
+              <el-form-item prop="job">
+                <el-input v-model="scope.row.job" placeholder="工作职务，例如党办主任"></el-input>
+              </el-form-item>
+            </template>
+            <template v-else>
+            {{ scope.row.job }}
             </template>
           </template>
         </el-table-column>

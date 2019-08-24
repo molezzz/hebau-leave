@@ -23,7 +23,7 @@
             {{ scope.row.user.mobile }}
           </template>
         </el-table-column>
-        <el-table-column label="岗位" align="center">
+        <el-table-column label="职务" align="center">
           <template slot-scope="scope">
             {{ scope.row.user.job }}
           </template>
