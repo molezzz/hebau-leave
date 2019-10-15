@@ -1,6 +1,13 @@
 class Record < ApplicationRecord
     belongs_to :user
     belongs_to :approver,required: false
+    has_many :record_logs
+    enum status: {
+        created: 0,
+        superior: 1,  # 上级
+        college: 2,   # 学校
+        filing: 3     # 组织部备案
+    }
 
     store :exdata, accessors: [:unit_opinion, :leader_opinion,:remark], coder: JSON
 
@@ -61,6 +68,11 @@ class Record < ApplicationRecord
  
 
     private
+
+    after_update :status_log, if: :saved_change_to_status?
+    def status_log
+        self.record_logs.create kind: self.status
+    end
 
     def back_as_human
         if back_at && back_at <= end_at

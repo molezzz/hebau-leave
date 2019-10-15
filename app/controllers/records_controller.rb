@@ -1,10 +1,12 @@
 class RecordsController < ApplicationController
   before_action :set_record, only: [:show, :edit, :update, :destroy]
-
+  before_action :auth_user!, except: [:show]
+  before_action :set_user, only: [:create]
   # GET /records
   # GET /records.json
   def index
-    @records = Record.page(params[:page]).per(params[:perpage])
+    resource = current_admin ? Record : current_user.records
+    @records = resource.ransack(params[:q]).result.page(params[:page]).per(params[:perpage]).order(created_at: :desc)
   end
 
   # GET /records/1
@@ -16,6 +18,15 @@ class RecordsController < ApplicationController
         send_data @record.to_pdf, filename: "#{@record.user.realname}-#{@record.id}.pdf",disposition: 'inline'
       }
     end
+  end
+
+  # 统计已有的请假记录
+  def count
+    # 默认本月
+    count = current_user.records.where('begin_at > ?', Time.now.beginning_of_month).where('begin_at < ?', Time.now.end_of_month).count
+    render json: {
+      total: count
+    }
   end
 
   # GET /records/new
@@ -30,7 +41,7 @@ class RecordsController < ApplicationController
   # POST /records
   # POST /records.json
   def create
-    @record = Record.new(record_params)
+    @record = @user.records.new(record_params)
 
     respond_to do |format|
       if @record.save
@@ -71,6 +82,10 @@ class RecordsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_record
       @record = Record.find(params[:id])
+    end
+
+    def set_user
+      @user = current_admin ? User.find(params[:user_id]) : current_user
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

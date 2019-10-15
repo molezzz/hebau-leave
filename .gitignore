@@ -40,5 +40,6 @@ app/assets/fonts/source_han_sans
 /docker/rails/gems/*
 /docker/rails/node_modules/*
 .env.production
+.env.development
 docker/mysql/db/*
 docker/redis/db/*

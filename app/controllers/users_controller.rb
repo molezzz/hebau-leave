@@ -61,6 +61,71 @@ class UsersController < ApplicationController
     end
   end
 
+  def login
+    code = params[:user][:code]
+    result = Wechat.api.jscode2session code
+
+    if !result['openid']
+      render json: {
+        error: :wrong_jscode,
+        message: 'jscode 无效'
+      }, status: :forbidden
+      return
+    end
+    
+    wechat = WechatSession.where(openid: result['openid']).first
+    # 用户存在，直接登录
+    if wechat && wechat.user
+      @user = wechat.user
+      @user.login
+      render :show
+      return
+    end
+    # 如果提供了手机号，查找手机号是否绑定了微信
+    if params[:user][:mobile]
+      @user = User.where(mobile: params[:user][:mobile].strip).first
+      
+      if !@user
+        render json: {
+          error: 'user_not_found',
+          message: '您的手机号尚未在系统中登记，请联系管理员登记后登录'
+        }, status: :unprocessable_entity
+        return 
+      end
+
+      if @user.wechat_sessions.count > 0
+        render json: {
+          error: 'mobile_binded_openid',
+          message: '手机号已绑定其他微信账号，请使用其他微信登录，或联系管理员解除绑定！' 
+        }, status: :unprocessable_entity
+        
+        return
+      end
+      # 绑定session后完成登录
+      if @user.bind_openid result['openid']
+        @user.login
+        render :show
+        return
+      else
+        render json: {
+          error: 'bind_openid_failed',
+          message: '微信绑定失败，请联系管理员' 
+        }, status: :unprocessable_entity
+        return
+      end
+      
+    end
+
+    render json: {
+      error: 'openid_not_found',
+      message: '您还没有绑定手机号，请绑定手机号！',
+      data: {
+        openid: result['openid'],
+        jscode: code
+      }
+    }, status: :not_found
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
@@ -69,6 +134,6 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:position_id, :department_id, :realname, :mobile, :nickname, :avatar, :password, :job, :exdata, :last_sign_in_at, :last_sign_in_ip)
+      params.require(:user).permit(:position_id, :department_id, :realname, :mobile, :nickname, :avatar, :password, :job, :exdata, :last_sign_in_at, :last_sign_in_ip, :code)
     end
 end

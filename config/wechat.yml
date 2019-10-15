@@ -1,15 +1,21 @@
 default: &default
-  corpid: "corpid"
-  corpsecret: "corpsecret"
-  agentid:  1
-# Or if using public account, only need above two line
-#  appid: "my_appid"
-#  secret: "my_secret"
-  token:    "my_token"
-  access_token: "C:/Users/[username]/wechat_access_token"
-  encrypt_mode: false # if true must fill encoding_aes_key
-  encoding_aes_key:  "my_encoding_aes_key"
-  jsapi_ticket: "C:/Users/[user_name]/wechat_jsapi_ticket"
+#   corpid: "corpid"
+#   corpsecret: "corpsecret"
+#   agentid:  1
+# # Or if using public account, only need above two line
+# #  appid: "my_appid"
+# #  secret: "my_secret"
+#   token:    "my_token"
+#   access_token: "C:/Users/[username]/wechat_access_token"
+#   encrypt_mode: false # if true must fill encoding_aes_key
+#   encoding_aes_key:  "my_encoding_aes_key"
+#   jsapi_ticket: "C:/Users/[user_name]/wechat_jsapi_ticket"
+  appid: "app_id"
+  secret: "app_secret"
+  token:  "app_token"
+  access_token: "/var/tmp/wechat_access_token"
+  jsapi_ticket: "/var/tmp/wechat_jsapi_ticket"
+  type: 'mp'
 
 production:
   # corpid:     <%= ENV['WECHAT_CORPID'] %>
@@ -29,6 +35,9 @@ production:
 
 development:
   <<: *default
+  appid:      <%= ENV['WECHAT_APPID'] %>    
+  secret:     <%= ENV['WECHAT_SECRET'] %>    
+  token:      <%= ENV['WECHAT_TOKEN'] %>
   trusted_domain_fullname: "http://your_dev.proxy.qqbrowser.cc"
 
 test:

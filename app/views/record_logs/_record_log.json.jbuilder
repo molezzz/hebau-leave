@@ -1,0 +1,1 @@
+json.extract! record_log, :id, :kind, :created_at

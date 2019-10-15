@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
   resources :records
-  resources :users
+  resources :users do 
+    collection do
+      post :login
+      get :record_count, to: 'records#count'
+    end
+  end
   resource :wechat, only: [:show, :create]
   resources :positions
   resources :departments
