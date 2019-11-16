@@ -1,5 +1,5 @@
 class RecordsController < ApplicationController
-  before_action :set_record, only: [:show, :edit, :update, :destroy]
+  before_action :set_record, only: [:show, :edit, :update, :destroy, :back, :approval]
   before_action :auth_user!, except: [:show]
   before_action :set_user, only: [:create]
   # GET /records
@@ -27,6 +27,26 @@ class RecordsController < ApplicationController
     render json: {
       total: count
     }
+  end
+
+  # 销假
+  def back
+    if @record.user.id == current_user.id
+      if @record.update(back_at: Time.now)
+        render :show
+      else
+        render json: { error: 'record_save_error', message: '销假失败'}, status: :not_acceptable
+      end
+    else
+      render json: { error: 'record_back_forbidden', message: '只允许本人销假'}, status: :forbidden
+    end
+  end
+
+  def unreviewed
+    department_ids = Department.where(master_id: current_user.id).pluck(:id)
+    user_ids = User.where(department_id: department_ids).pluck(:id)
+    @records = Record.where(user_id: user_ids).where(status: 0).page(params[:page])
+    render :index
   end
 
   # GET /records/new
@@ -65,6 +85,20 @@ class RecordsController < ApplicationController
         format.html { render :edit }
         format.json { render json: @record.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  # PUT 
+  # 通过审批
+  def approval
+    result = false
+    if @record.created? && @record.user && @record.user.department && @record.user.department.master_id == current_user.id
+      result = @record.update(status: params[:status] || 1)
+    end
+    if result 
+      render :show
+    else
+      render json: { error: 'approval_failed', message: '审批失败，请确保您有权处理！', status: :unprocessable_entity }
     end
   end
 

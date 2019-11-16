@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_15_071658) do
+ActiveRecord::Schema.define(version: 2019_11_01_084418) do
 
   create_table "admins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "username"
@@ -29,6 +29,8 @@ ActiveRecord::Schema.define(version: 2019_10_15_071658) do
     t.integer "category", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "master_id"
+    t.index ["master_id"], name: "index_departments_on_master_id"
     t.index ["parent_id"], name: "index_departments_on_parent_id"
   end
 

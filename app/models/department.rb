@@ -1,5 +1,6 @@
 class Department < ApplicationRecord
     has_many :users
+    belongs_to :master, class_name: 'User' 
     
     # admin 行政部门,edu 教学部门,party 党群部门, assistant 科研教辅
     enum category: {

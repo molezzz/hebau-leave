@@ -1,5 +1,13 @@
 Rails.application.routes.draw do
-  resources :records
+  resources :records do
+    member do
+      put :back
+      put :approval
+    end
+    collection do
+      get :unreviewed
+    end
+  end
   resources :users do 
     collection do
       post :login

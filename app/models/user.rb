@@ -7,6 +7,7 @@ class User < ApplicationRecord
     
     belongs_to :department
     belongs_to :position
+    has_many :own_departments, foreign_key: :master_id, class_name: 'Department'
 
     attr_accessor :jwt_token
 
