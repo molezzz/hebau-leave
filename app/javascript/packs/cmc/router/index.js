@@ -72,6 +72,11 @@ export const constantRouterMap = [
         name: 'admins',
         component: () => import('../views/dashboard/admins.vue'),
         meta: { title: '管理员', icon: 'admin' }
+      },{
+        path: 'vote_members',
+        name: 'vote_members',
+        component: () => import('../views/dashboard/vote_members.vue'),
+        meta: { title: '投票员', icon: 'vote-member' }
       }
     ]
   },

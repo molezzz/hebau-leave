@@ -24,4 +24,9 @@ Rails.application.routes.draw do
   get 'cmc/dashboard' => 'cmc#index'
   post 'admin/logout' => 'cmc#logout'
   get 'user/info' => 'cmc#user_info'
+  post 'assess/votes' => 'assess#save_votes'
+  post 'assess/generate_codes' => 'assess#generate_codes'
+  post 'assess/send_codes' => 'assess#send_codes'
+  get 'assess/send_code_list' => 'assess#send_code_list'
+  get 'assess(/:code)' => 'assess#index'
 end

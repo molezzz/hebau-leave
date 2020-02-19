@@ -1,0 +1,11 @@
+<div id="app">
+    <router-view/>
+</div>
+<script>
+window._data = {
+    member: <%=@vote_member.to_json.html_safe%>,
+    projects: <%=@projects.to_json.html_safe%>
+}
+</script>
+<%= javascript_pack_tag 'assess/main' %>
+<%= stylesheet_pack_tag 'assess/main' %>

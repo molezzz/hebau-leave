@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_01_084418) do
+ActiveRecord::Schema.define(version: 2020_02_18_093216) do
 
   create_table "admins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "username"
@@ -91,6 +91,33 @@ ActiveRecord::Schema.define(version: 2019_11_01_084418) do
     t.index ["mobile"], name: "index_users_on_mobile", unique: true
     t.index ["position_id"], name: "index_users_on_position_id"
     t.index ["realname"], name: "index_users_on_realname"
+  end
+
+  create_table "vote_members", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "mobile"
+    t.string "code"
+    t.string "kind"
+    t.integer "department_id"
+    t.text "ua"
+    t.string "ip"
+    t.datetime "vote_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_vote_members_on_code", unique: true
+    t.index ["department_id"], name: "index_vote_members_on_department_id"
+  end
+
+  create_table "vote_results", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "kind"
+    t.integer "department_id"
+    t.integer "user_id"
+    t.string "code"
+    t.integer "score"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["department_id"], name: "index_vote_results_on_department_id"
+    t.index ["kind"], name: "index_vote_results_on_kind"
+    t.index ["user_id"], name: "index_vote_results_on_user_id"
   end
 
   create_table "wechat_sessions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
