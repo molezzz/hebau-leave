@@ -295,7 +295,7 @@ GEM
       http (>= 1.0.4, < 5)
       nokogiri (>= 1.6.0)
       thor
-    yard (0.9.18)
+    yard (0.9.24)
 
 PLATFORMS
   java
