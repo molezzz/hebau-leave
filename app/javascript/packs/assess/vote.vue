@@ -1,30 +1,37 @@
 <template>
-  <div style="padding: 0.5rem;">
-    <h1>{{title}}</h1>
-    <div v-if="voted" style="text-align: center;margin-top: 30%;">
-      <van-circle
-        style="margin: 1rem auto; display: block;"
-        v-model="currentRate"
-        text="✓"
-        size="160px"
-        color="#0dc161"
-        :stroke-width="60"
-      />
-      <h2 style="margin-top: 3rem;">您已经完成了投票！</h2>
+  <div>
+    <div v-if="!member">
+      <h3 style="text-align:center;margin-top: 30%;">
+        对不起，您不能访问！
+      </h3>
     </div>
-    <div v-else>
-      <van-panel v-for="(p,idx) in projects" :key="idx" :title="p.name" desc="描述信息" class="project">
-        <div class="user" v-for="(it, n) in p.items" :key="n" :title="it.name + desc(it)">
-          <h4>{{ it.name }}</h4>
-          <span class="desc">{{desc(it)}}</span>
-          <div class="votes">
-            <van-radio-group v-model="p.votes[it.id]" direction="horizontal">
-              <van-radio v-for="(c, i) in p.choice" :key="i" :name="c.val">{{c.label}}</van-radio>
-            </van-radio-group>
+    <div style="padding: 0.5rem;" v-else>
+      <h1>{{title}}</h1>
+      <div v-if="voted" style="text-align: center;margin-top: 30%;">
+        <van-circle
+          style="margin: 1rem auto; display: block;"
+          v-model="currentRate"
+          text="✓"
+          size="160px"
+          color="#0dc161"
+          :stroke-width="60"
+        />
+        <h2 style="margin-top: 3rem;">您已经完成了投票！</h2>
+      </div>
+      <div v-else>
+        <van-panel v-for="(p,idx) in projects" :key="idx" :title="p.name" desc="描述信息" class="project">
+          <div class="user" v-for="(it, n) in p.items" :key="n" :title="it.name + desc(it)">
+            <h4>{{ it.name }}</h4>
+            <span class="desc">{{desc(it)}}</span>
+            <div class="votes">
+              <van-radio-group v-model="p.votes[it.id]" direction="horizontal">
+                <van-radio v-for="(c, i) in p.choice" :key="i" :name="c.val">{{c.label}}</van-radio>
+              </van-radio-group>
+            </div>
           </div>
-        </div>
-      </van-panel>
-      <van-button type="danger" block @click="submit">提交保存</van-button>
+        </van-panel>
+        <van-button type="danger" block @click="submit">提交保存</van-button>
+      </div>
     </div>
   </div>
 </template>
@@ -150,13 +157,18 @@ import 'vant/lib/notify/style';
 
 export default {
   data() {
+    let projects = [];
+    ['dj','bz', 'gb', 'lz'].forEach((k) => {
+      if(window._data.projects[k].items.length > 0) { 
+        projects.push(window._data.projects[k])
+      }
+    })
     return {
       title: '河北农大2019年度处级干部考核',
       radio: 0,
-      projects: ['bz', 'gb', 'lz'].map((k) => {
-        return window._data.projects[k]
-      }),
-      voted: window._data.member.vote_at,
+      member: window._data.member,
+      projects: projects,
+      voted: window._data.member ? window._data.member.vote_at : null,
       currentRate: 100
     }
   },
@@ -179,13 +191,13 @@ export default {
         }
       }
       if (voteCount < total) {
-        Notify({ type: 'danger', message: '您还有'+ (total - voteCount) + '个人没有投票！'});
+        Notify({ type: 'danger', message: '您还有'+ (total - voteCount) + '项没有投票！'});
         return;
       }
-      // let result = await axios.post('/assess/votes.json', { code: window._data.member.code, votes: data })
-      // if (!result.error) {
-      //   this.voted = true;
-      // }
+      let result = await axios.post('/assess/votes.json', { code: window._data.member.code, votes: data })
+      if (!result.error) {
+        this.voted = true;
+      }
     }
   },
   components: {

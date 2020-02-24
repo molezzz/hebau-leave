@@ -2,6 +2,7 @@ import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import store from '../store'
 import { getToken } from './auth'
+import Qs from 'qs'
 
 // 创建axios实例
 const service = axios.create({
@@ -26,6 +27,19 @@ service.interceptors.request.use(
     Promise.reject(error)
   }
 )
+// Format nested params correctly
+service.interceptors.request.use(config => {
+
+  config.paramsSerializer = params => {
+    // Qs is already included in the Axios package
+    return Qs.stringify(params, {
+      arrayFormat: "brackets",
+      encode: false
+    });
+  };
+
+  return config;
+})
 
 // response 拦截器
 service.interceptors.response.use(

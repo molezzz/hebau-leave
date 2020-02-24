@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_18_093216) do
+ActiveRecord::Schema.define(version: 2020_02_22_145843) do
 
   create_table "admins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "username"
@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2020_02_18_093216) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "master_id"
+    t.string "party"
     t.index ["master_id"], name: "index_departments_on_master_id"
     t.index ["parent_id"], name: "index_departments_on_parent_id"
   end
@@ -87,6 +88,7 @@ ActiveRecord::Schema.define(version: 2020_02_18_093216) do
     t.string "last_sign_in_ip"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "weight"
     t.index ["department_id"], name: "index_users_on_department_id"
     t.index ["mobile"], name: "index_users_on_mobile", unique: true
     t.index ["position_id"], name: "index_users_on_position_id"
@@ -97,10 +99,12 @@ ActiveRecord::Schema.define(version: 2020_02_18_093216) do
     t.string "mobile"
     t.string "code"
     t.string "kind"
+    t.integer "category"
     t.integer "department_id"
     t.text "ua"
     t.string "ip"
     t.datetime "vote_at"
+    t.datetime "send_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_vote_members_on_code", unique: true
@@ -109,6 +113,7 @@ ActiveRecord::Schema.define(version: 2020_02_18_093216) do
 
   create_table "vote_results", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "kind"
+    t.string "sheet"
     t.integer "department_id"
     t.integer "user_id"
     t.string "code"

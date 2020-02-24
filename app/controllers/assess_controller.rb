@@ -6,6 +6,19 @@ class AssessController < ApplicationController
 
   def index
     @projects = {
+      dj: {
+        name: '党建专项考核民主测评表',
+        desc: '',
+        kind: 'dj',
+        items: [],
+        choice: [
+          {label: '优秀', val: 1000 },
+          {label: '良好', val: 800 },
+          {label: '一般', val: 600 },
+          {label: '较差', val: 300 }
+        ],
+        votes: {}
+      },
       bz: {
         name: '处级班子考核民主测评表',
         desc: '',
@@ -15,7 +28,7 @@ class AssessController < ApplicationController
           {label: '优秀', val: 100 },
           {label: '良好', val: 80 },
           {label: '一般', val: 60 },
-          {label: '较差', val: 3 }
+          {label: '较差', val: 30 }
         ],
         votes: {}
       },
@@ -51,15 +64,33 @@ class AssessController < ApplicationController
       render
       return
     end
-    if @vote_member.kind  ==  'hp'
+    # 渤海学院单独组织
+    if  @vote_member.kind.include? 'dj'
+      #党群和行政的党建单独打，打给机关党委
+      #继续教育学院和研究生院属于行政，但是有自己的党委
+      unit = @vote_member.kind.split('-')[1]
+      if unit
+        dep = Department.select('id,name,party').where(name: unit == 'yjs' ? '研究生学院' : '继续教育学院')
+      else
+        dep = Department.select('id,name,party').where(category: 4)
+      end
+      @projects[:dj][:items] = dep.map {|d| { name: d.party, id: d.id }}
+    elsif @vote_member.kind  ==  'hp'
       #互评逻辑
-      dep = Department.select('id,name').where(category: @vote_member.category)
+      #党群给党群、教学、教辅打，其中打给党群部门的算该部门的自评
+      #行政给行政、教学、教辅打，其中打给行政部门的算该部门的自评
+      #该步骤先组织
+      categories = [0,2].include?(@vote_member.category) ? [1,3] : [0,2]
+      dep = Department.select('id,name').where(category: categories)
       @projects[:bz][:items] = dep.map {|d| { name: d.name, id: d.id }}
-      @projects[:gb][:items] = User.includes(:department).where(department_id: dep.collect{|d| d.id }).select('id, realname, department_id ,job').all.map {|u| {name: u.realname, job: u.job, id: u.id, department: u.department.name }}
+      @projects[:gb][:items] = User.order(weight: :asc).includes(:department).where(department_id: dep.collect{|d| d.id }).select('id, realname, department_id ,job').all.map {|u| {name: u.realname, job: u.job, id: u.id, department: u.department.name }}
       @projects[:lz][:items] = @projects[:gb][:items]
     else
       #自评逻辑
-      dep = Department.select('id,name').where(id: @vote_member.department_id)
+      #只有教学和教辅进行自评
+      #自评同时打党建的票
+      dep = Department.select('id,name,party').where(id: @vote_member.department_id)
+      @projects[:dj][:items] = dep.map {|d| { name: d.party, id: d.id }}
       @projects[:bz][:items] = dep.map {|d| { name: d.name, id: d.id }}
       @projects[:gb][:items] = User.includes(:department).where(department_id: dep.collect{|d| d.id }).select('id, realname, department_id ,job').all.map {|u| {name: u.realname, job: u.job, id: u.id, department: u.department.name }}
       @projects[:lz][:items] = @projects[:gb][:items]

@@ -5,6 +5,9 @@
         <el-select v-model="form.kind" placeholder="类型">
           <el-option label="自评" value="zp"></el-option>
           <el-option label="互评" value="hp"></el-option>
+          <el-option label="党群、行政党建" value="dj"></el-option>
+          <el-option label="研究生院党建" value="dj-yjs"></el-option>
+          <el-option label="继续教育学院党建" value="dj-jx"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="部门类型" v-if="form.kind === 'hp'">
@@ -56,7 +59,12 @@ export default {
   methods: {
     getDepartments(){
       request({
-        url: '/departments'
+        url: '/departments',
+        params: {
+          q: {
+            category_in: [1,3]
+          }
+        }
       }).then(response => {
         this.departments =  response
       })
