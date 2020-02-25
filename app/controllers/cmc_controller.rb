@@ -9,7 +9,7 @@ class CmcController < ApplicationController
         render json: {
             roles: ['admin'],
             name: 'mole',
-            avatar: 'https://avatars3.githubusercontent.com/u/787294?s=460&v=4'
+            avatar: 'https://iph.href.lu/80x80?text=avatar&bg=ADE96E'
         }
     end
 end

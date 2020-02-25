@@ -185,7 +185,7 @@ export default {
       let total = 0;
       let voteCount = 0;
       for(let i in this.projects) {
-        if(['bz','gb','lz'].includes(this.projects[i].kind)) {
+        if(['dj','bz','gb','lz'].includes(this.projects[i].kind)) {
           data[this.projects[i].kind] = this.projects[i].votes;
           total += this.projects[i].items.length;
           voteCount += Object.keys(this.projects[i].votes).length;
