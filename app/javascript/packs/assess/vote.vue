@@ -97,7 +97,8 @@ import {
   RadioGroup, 
   Radio,
   Circle,
-  Notify
+  Notify,
+  Button
 } from 'vant';
 import axios from 'axios';
 import 'vant/lib/button/style';
@@ -205,7 +206,8 @@ export default {
     VanCellGroup: CellGroup,
     VanPanel: Panel,
     VanRadio: Radio,
-    VanRadioGroup: RadioGroup
+    VanRadioGroup: RadioGroup,
+    VanButton: Button
   },
   watch: {
     // projects: {
