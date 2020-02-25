@@ -64,7 +64,6 @@ class AssessController < ApplicationController
       render
       return
     end
-    # 渤海学院单独组织
     if  @vote_member.kind.include? 'dj'
       #党群和行政的党建单独打，打给机关党委
       #继续教育学院和研究生院属于行政，但是有自己的党委
@@ -84,7 +83,8 @@ class AssessController < ApplicationController
       dep = Department.select('id,name').where(category: categories)
       @projects[:bz][:items] = dep.map {|d| { name: d.name, id: d.id }}
       @projects[:gb][:items] = User.order(weight: :asc).includes(:department).where(department_id: dep.collect{|d| d.id }).select('id, realname, department_id ,job').all.map {|u| {name: u.realname, job: u.job, id: u.id, department: u.department.name }}
-      @projects[:lz][:items] = @projects[:gb][:items]
+      # 今年不考核廉政
+      # @projects[:lz][:items] = @projects[:gb][:items]
     else
       #自评逻辑
       #只有教学和教辅进行自评
@@ -93,7 +93,8 @@ class AssessController < ApplicationController
       @projects[:dj][:items] = dep.map {|d| { name: d.party, id: d.id }}
       @projects[:bz][:items] = dep.map {|d| { name: d.name, id: d.id }}
       @projects[:gb][:items] = User.includes(:department).where(department_id: dep.collect{|d| d.id }).select('id, realname, department_id ,job').all.map {|u| {name: u.realname, job: u.job, id: u.id, department: u.department.name }}
-      @projects[:lz][:items] = @projects[:gb][:items]
+      # 今年不考核廉政
+      # @projects[:lz][:items] = @projects[:gb][:items]
     end
   end
 
