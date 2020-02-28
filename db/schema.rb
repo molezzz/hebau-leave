@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_22_145843) do
+ActiveRecord::Schema.define(version: 2020_02_28_133833) do
 
   create_table "admins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "username"
@@ -27,10 +27,11 @@ ActiveRecord::Schema.define(version: 2020_02_22_145843) do
     t.integer "parent_id", default: 0, null: false
     t.string "name"
     t.integer "category", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "master_id"
     t.string "party"
+    t.integer "sn", default: 0, null: false
     t.index ["master_id"], name: "index_departments_on_master_id"
     t.index ["parent_id"], name: "index_departments_on_parent_id"
   end
@@ -89,6 +90,7 @@ ActiveRecord::Schema.define(version: 2020_02_22_145843) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "weight"
+    t.integer "weight_hp"
     t.index ["department_id"], name: "index_users_on_department_id"
     t.index ["mobile"], name: "index_users_on_mobile", unique: true
     t.index ["position_id"], name: "index_users_on_position_id"
