@@ -79,7 +79,7 @@ class AssessController < ApplicationController
       #党群给党群、教学、教辅打，其中打给党群部门的算该部门的自评
       #行政给行政、教学、教辅打，其中打给行政部门的算该部门的自评
       #该步骤先组织
-      categories = [0,2].include?(@vote_member.category) ? [1,3] : [0,2]
+      categories = [0,2].include?(@vote_member.category) ? [1,3, @vote_member.category] : [0,2]
       dep = Department.select('id,name').where(category: categories)
       @projects[:bz][:items] = dep.map {|d| { name: d.name, id: d.id }}
       @projects[:gb][:items] = User.order(weight_hp: :asc).includes(:department).where(department_id: dep.collect{|d| d.id }).select('id, realname, department_id ,job').all.map {|u| {name: u.realname, job: u.job, id: u.id, department: u.department.name }}
