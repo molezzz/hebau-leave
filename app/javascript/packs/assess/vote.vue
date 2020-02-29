@@ -19,7 +19,12 @@
         <h2 style="margin-top: 3rem;">您已经完成了投票！</h2>
       </div>
       <div v-else>
-        <van-panel v-for="(p,idx) in projects" :key="idx" :title="p.name" desc="描述信息" class="project">
+        <van-panel v-for="(p,idx) in projects" :key="idx" class="project">
+          <div slot="header" class="panel-header">
+            <h4 class="title">{{p.name}}</h4>
+            <div class="note" v-html="p.desc">
+            </div>
+          </div>
           <div class="user" v-for="(it, n) in p.items" :key="n" :title="it.name + desc(it)">
             <h4>{{ it.name }}</h4>
             <span class="desc">{{desc(it)}}</span>
@@ -43,12 +48,28 @@
     font-size: 1.2rem;
     text-align: center;
   }
-  .project.van-panel {
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-  }
-  .van-cell-group__title {
-    margin-top: 1.5rem;
+  .project {
+    .van-panel {
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .panel-header {
+      padding: 0.2rem 1rem;
+      .title {
+        text-align: center;
+        margin-top: 1.5rem;
+      }
+      p {
+        font-size: 12px;
+        color: #666;
+        margin: 0.2rem auto;
+
+        strong {
+          color: #333;
+        }
+      }
+    }
   }
   .van-radio--horizontal {
     margin: 0.3rem 0 0.3rem 1rem;

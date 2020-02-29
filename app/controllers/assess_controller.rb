@@ -8,7 +8,7 @@ class AssessController < ApplicationController
     @projects = {
       dj: {
         name: '党建专项考核民主测评表',
-        desc: '',
+        desc: '<p><strong>评价要点：</strong>领导班子建设、基层组织建设、党风廉政建设、制度建设、思想政治建设、工作创新等</p>',
         kind: 'dj',
         items: [],
         choice: [
@@ -21,7 +21,13 @@ class AssessController < ApplicationController
       },
       bz: {
         name: '处级班子考核民主测评表',
-        desc: '',
+        desc: '<p><strong>评价要点：</strong></p>
+        <p>政治思想水平：政治意识、大局意识、核心意识、看齐意识；</p>
+        <p>党规党纪：严守政治纪律和政治规矩，落实全面从严治党主体责任；</p>
+        <p>领导科学发展能力：办学方向、驾驭全局、团结协作、依法依规、党的建设；</p>
+        <p>工作业绩：立德树人、科学研究、服务社会、内涵发展、开拓创新；</p>
+        <p>工作作风：精神状态、工作效率、落实力度、服务态度、创新意识。</p>
+    ',
         kind: 'bz',
         items: [],
         choice: [
@@ -34,14 +40,20 @@ class AssessController < ApplicationController
       },
       gb: {
         name: '处级干部考核民主测评表',
-        desc: '',
+        desc: '<p><strong>评价要点：</strong></p>
+        <p>德：政治意识、大局意识、核心意识、看齐意识，理想信念，道德品质；</p>
+        <p>能：工作思路、政策水平、组织协调、业务能力、责任担当；</p>
+        <p>勤：敬业精神、服务意识和工作态度；</p>
+        <p>绩：履行岗位职责、完成工作任务情况；</p>
+        <p>廉：严守政治纪律和政治规矩，遵守廉洁自律规定。</p>
+        ',
         kind: 'gb',
         items: [],
         choice: [
           {label: '优秀', val: 100 },
-          {label: '称职', val: 80 },
-          {label: '基本称职', val: 60 },
-          {label: '不称职', val: 30 }
+          {label: '合格', val: 80 },
+          {label: '基本合格', val: 60 },
+          {label: '不合格', val: 30 }
         ],
         votes: {}
       },
@@ -95,6 +107,7 @@ class AssessController < ApplicationController
       @projects[:gb][:items] = User.includes(:department).where(department_id: dep.collect{|d| d.id }).select('id, realname, department_id ,job').all.map {|u| {name: u.realname, job: u.job, id: u.id, department: u.department.name }}
       # 今年不考核廉政
       # @projects[:lz][:items] = @projects[:gb][:items]
+      @projects[:bz][:desc] = '<p><strong>评价要点：</strong>改革发展、民主管理、班子凝聚力、精神状态、敬业精神、工作效率、深入基层联系群众、为教职工排忧解难、道德品行、廉洁自律、公众形象等。</p>'
     end
   end
 
