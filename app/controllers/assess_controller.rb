@@ -134,13 +134,13 @@ class AssessController < ApplicationController
     if kind == 'hp'
       category = params[:category].to_i
       render(json: { error: true, message: '请选择正确的部门类别' }) && return unless [0,1,2,3].include? category
-      codes = params[:mobiles].split(',').map do |m|
+      codes = params[:mobiles].split(/,|，/).map do |m|
         VoteMember.new(mobile: m.gsub(/\s+/,''), code: SecureRandom.hex(8), kind: kind, category: category)
       end
       result = VoteMember.import codes
       render json: { failed: result.failed_instances.map{|ins| ins.mobile }}
     else
-      codes = params[:mobiles].split(',').map do |m|
+      codes = params[:mobiles].split(/,|，/).map do |m|
         VoteMember.new(mobile: m.gsub(/\s+/,''), code: SecureRandom.hex(8), kind: kind, department_id: params[:department])
       end
       result = VoteMember.import codes
