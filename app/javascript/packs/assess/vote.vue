@@ -11,12 +11,13 @@
         <van-circle
           style="margin: 1rem auto; display: block;"
           v-model="currentRate"
-          text="✓"
+          :text="voteSuccess ? '✓' : 'x'"
           size="160px"
-          color="#0dc161"
+          :color="voteSuccess ? '#19be6b' : '#ed4014'"
           :stroke-width="60"
+          :class="{success: voteSuccess}"
         />
-        <h2 style="margin-top: 3rem;">您已经完成了投票！</h2>
+        <h2 style="margin-top: 3rem;">{{voteSuccess ? '投票完成！' : ''}}链接已失效！</h2>
       </div>
       <div v-else>
         <van-panel v-for="(p,idx) in projects" :key="idx" class="project">
@@ -29,13 +30,13 @@
             <h4>{{ it.name }}</h4>
             <span class="desc">{{desc(it)}}</span>
             <div class="votes">
-              <van-radio-group v-model="p.votes[it.id]" direction="horizontal">
+              <van-radio-group v-model="p.votes[it.id]" direction="horizontal" @change="vote(it)">
                 <van-radio v-for="(c, i) in p.choice" :key="i" :name="c.val">{{c.label}}</van-radio>
               </van-radio-group>
             </div>
           </div>
         </van-panel>
-        <van-button type="danger" block @click="submit">提交保存</van-button>
+        <van-button type="danger" block @click="submitConfirm">提交保存</van-button>
       </div>
     </div>
   </div>
@@ -79,7 +80,10 @@
   }
   .van-circle__text {
     font-size: 4rem;
-    color: #0dc161
+    color: #ed4014;
+  }
+  .success .van-circle__text {
+    color: #19be6b;
   }
   .van-panel__header {
     text-align: center;
@@ -119,7 +123,8 @@ import {
   Radio,
   Circle,
   Notify,
-  Button
+  Button,
+  Dialog
 } from 'vant';
 import axios from 'axios';
 import 'vant/lib/button/style';
@@ -130,6 +135,7 @@ import 'vant/lib/radio/style';
 import 'vant/lib/radio-group/style';
 import 'vant/lib/circle/style';
 import 'vant/lib/notify/style';
+import 'vant/lib/dialog/style';
 
 // let projects = [
 //   {
@@ -191,7 +197,8 @@ export default {
       member: window._data.member,
       projects: projects,
       voted: window._data.member ? window._data.member.vote_at : null,
-      currentRate: 100
+      currentRate: 100,
+      voteSuccess: false
     }
   },
   methods: {
@@ -201,24 +208,51 @@ export default {
       if(u.job) title.push(u.job);
       return title.length > 0 ? title.join(' - ') : '';
     },
+    vote(item){
+      item.voted = true
+    },
+    submitConfirm(){
+      Dialog.confirm({
+        title: '注意！',
+        message: '提交后，本次投票结束，您不能再返回修改投票。是否继续？'
+      }).then(() => {
+        this.submit()
+      }).catch(() => {
+        // on cancel
+      });
+    },
     async submit(){
       let data = {};
       let total = 0;
       let voteCount = 0;
+      let unvoted = {}
       for(let i in this.projects) {
         if(['dj','bz','gb','lz'].includes(this.projects[i].kind)) {
+          // 检查没投票的
+          for(let k in this.projects[i].items) {
+            if(!this.projects[i].items[k].voted) {
+              unvoted = {
+                project: this.projects[i],
+                item: this.projects[i].items[k]
+              }
+              break
+            }
+          }
           data[this.projects[i].kind] = this.projects[i].votes;
           total += this.projects[i].items.length;
           voteCount += Object.keys(this.projects[i].votes).length;
         }
       }
       if (voteCount < total) {
-        Notify({ type: 'danger', message: '您还有'+ (total - voteCount) + '项没有投票！'});
+        console.log(unvoted)
+        let tip = [unvoted.project.name, unvoted.item.department, unvoted.item.name].filter(u => u).join(' - ')
+        Notify({ type: 'danger', message: '您没给: ' + tip +' 投票！', duration: 10000});
         return;
       }
       let result = await axios.post('/assess/votes.json', { code: window._data.member.code, votes: data })
       if (!result.error) {
         this.voted = true;
+        this.voteSuccess = true;
       }
     }
   },
