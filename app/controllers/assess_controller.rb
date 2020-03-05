@@ -129,7 +129,11 @@ class AssessController < ApplicationController
         VoteResult.new(code: member.code, kind: member.kind, sheet: sheet, user_id: k, score: v, created_at: now, updated_at: now)
       end
     end.flatten
-    VoteResult.import department_votes + member_votes
+    # 党建打票
+    party_votes = data[:dj].to_h.map do |k, v|
+      VoteResult.new(code: member.code, kind: member.kind, sheet: :dj, department_id: k, score: v, created_at: now)
+    end
+    VoteResult.import party_votes + department_votes + member_votes
     member.update_attributes(ip: request.remote_ip, ua: request.user_agent, vote_at: now)
     render json: {message: '保存成功！'}
   end
