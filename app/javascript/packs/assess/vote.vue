@@ -18,6 +18,7 @@
           :class="{success: voteSuccess}"
         />
         <h2 style="margin-top: 3rem;">{{voteSuccess ? '投票完成！' : ''}}链接已失效！</h2>
+        <p>感谢您对干部考核工作的支持！</p>
       </div>
       <div v-else>
         <van-panel v-for="(p,idx) in projects" :key="idx" class="project">
@@ -214,7 +215,7 @@ export default {
     submitConfirm(){
       Dialog.confirm({
         title: '注意！',
-        message: '提交后，本次投票结束，您不能再返回修改投票。是否继续？'
+        message: '提交后，投票链接将会失效，您不能再次修改。是否继续？'
       }).then(() => {
         this.submit()
       }).catch(() => {
