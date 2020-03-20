@@ -109,7 +109,7 @@ class AssessController < ApplicationController
       dep = Department.select('id,name,party').where(id: @vote_member.department_id)
       @projects[:dj][:items] = dep.map {|d| { name: d.party, id: d.id }}
       @projects[:bz][:items] = dep.map {|d| { name: d.name, id: d.id }}
-      @projects[:gb][:items] = User.includes(:department).where(department_id: dep.collect{|d| d.id }).select('id, realname, department_id ,job').all.map {|u| {name: u.realname, job: u.job, id: u.id, department: u.department.name }}
+      @projects[:gb][:items] = User.includes(:department).where(department_id: dep.collect{|d| d.id }).select('id, realname, department_id ,job').order(weight: :asc).all.map {|u| {name: u.realname, job: u.job, id: u.id, department: u.department.name }}
       # 今年不考核廉政
       # @projects[:lz][:items] = @projects[:gb][:items]
       @projects[:bz][:desc] = '<p><strong>评价要点：</strong>改革发展、民主管理、班子凝聚力、精神状态、敬业精神、工作效率、深入基层联系群众、为教职工排忧解难、道德品行、廉洁自律、公众形象等。</p>'
