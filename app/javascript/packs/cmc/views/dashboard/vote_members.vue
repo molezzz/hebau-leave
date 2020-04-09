@@ -6,6 +6,7 @@
           <el-option label="自评" value="zp"></el-option>
           <el-option label="互评" value="hp"></el-option>
           <el-option label="党群、行政党建" value="dj"></el-option>
+          <el-option label="后勤党建" value="dj-hq"></el-option>
           <el-option label="研究生院党建" value="dj-yjs"></el-option>
           <el-option label="继续教育学院党建" value="dj-jx"></el-option>
         </el-select>

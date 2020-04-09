@@ -81,7 +81,15 @@ class AssessController < ApplicationController
       #继续教育学院和研究生院属于行政，但是有自己的党委
       unit = @vote_member.kind.split('-')[1]
       if unit
-        dep = Department.select('id,name,party').where(name: unit == 'yjs' ? '研究生学院' : '继续教育学院')
+        name = case unit
+        when 'yjs'
+          '研究生学院'
+        when 'hq'
+          '后勤管理处'
+        else
+          '继续教育学院'
+        end
+        dep = Department.select('id,name,party').where(name: name)
       else
         dep = Department.select('id,name,party').where(category: 4)
       end
