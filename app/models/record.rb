@@ -1,8 +1,10 @@
 class Record < ApplicationRecord
-    belongs_to :user
+    belongs_to :user, required: false
     belongs_to :approver,required: false
     has_many :record_logs
     enum status: {
+        refusal: -2,  # 被驳回
+        cancel: -1,  # 取消申请
         created: 0,
         superior: 1,  # 上级
         college: 2,   # 学校
@@ -71,7 +73,7 @@ class Record < ApplicationRecord
 
     after_update :status_log, if: :saved_change_to_status?
     def status_log
-        self.record_logs.create kind: self.status
+        self.record_logs.create kind: self.status, user_id: self.approver_id, remark: self.unit_opinion || self.leader_opinion || self.remark
     end
 
     def back_as_human

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_28_133833) do
+ActiveRecord::Schema.define(version: 2020_08_22_085110) do
 
   create_table "admins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "username"
@@ -47,6 +47,8 @@ ActiveRecord::Schema.define(version: 2020_02_28_133833) do
     t.integer "kind", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id"
+    t.text "remark"
     t.index ["record_id"], name: "index_record_logs_on_record_id"
   end
 
