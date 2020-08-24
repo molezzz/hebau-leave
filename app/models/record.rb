@@ -11,7 +11,7 @@ class Record < ApplicationRecord
         filing: 3     # 组织部备案
     }
 
-    store :exdata, accessors: [:unit_opinion, :leader_opinion,:remark], coder: JSON
+    store :exdata, accessors: [:unit_opinion, :leader_opinion,:remark, :back_lat, :back_lon], coder: JSON
 
     def to_pdf
         cell_padding = 12
@@ -54,8 +54,9 @@ class Record < ApplicationRecord
             [th('外出地点'),td(address),th('联系电话'),td(tel)],
             [th('外出事由'),td(cause,{colspan: 3})],
             [th('工作代管同志联系信息',{colspan: 4})],
-            [th('姓 名'),td(agent),th('职 务'),td(agent_office)],
-            [th('办公电话'),td(agent_office_tel),th('移动电话'),td(agent_mobile)],
+            [th('姓 名'),td(agent),th('移动电话'),td(agent_mobile)],
+            # [th('姓 名'),td(agent),th('职 务'),td(agent_office)],
+            # [th('办公电话'),td(agent_office_tel),th('移动电话'),td(agent_mobile)],
             [th('单位意见',{valign: :center}),td(unit_opinion,{colspan: 3, height: 100})],
             [th('校领导 意见',{valign: :center}),td(leader_opinion,{colspan: 3, height: 100})],
             [th('销假时间'),td(back_as_human,{colspan: 3})],

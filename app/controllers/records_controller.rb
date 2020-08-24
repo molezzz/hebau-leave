@@ -23,16 +23,21 @@ class RecordsController < ApplicationController
   # 统计已有的请假记录
   def count
     # 默认本月
-    count = current_user.records.where('begin_at > ?', Time.now.beginning_of_month).where('begin_at < ?', Time.now.end_of_month).count
+    month = current_user.records.where('begin_at > ?', Time.now.beginning_of_month).where('begin_at < ?', Time.now.end_of_month).where('status >= ?', 0).count
+    total = current_user.records.where('status > ?', 0).count
+    unback = current_user.records.where('status > ?', 1).where('back_at is null').count
     render json: {
-      total: count
+      total: total,
+      month: month,
+      unback: unback
     }
   end
 
   # 销假
   def back
     if @record.user.id == current_user.id
-      if @record.update(back_at: Time.now)
+      
+      if @record.update(record_params.merge(back_at: Time.now))
         render :show
       else
         render json: { error: 'record_save_error', message: '销假失败'}, status: :not_acceptable
@@ -124,6 +129,6 @@ class RecordsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def record_params
-      params.require(:record).permit(:user_id, :approver_id, :status, :begin_at, :end_at, :address, :tel, :cause, :agent, :agent_office, :agent_office_tel, :agent_mobile, :back_at, :unit_opinion, :leader_opinion, :remark)
+      params.require(:record).permit(:user_id, :approver_id, :status, :begin_at, :end_at, :address, :tel, :cause, :agent, :agent_office, :agent_office_tel, :agent_mobile, :back_at, :unit_opinion, :leader_opinion, :remark, :back_lat, :back_lon)
     end
 end
