@@ -6,7 +6,7 @@ class RecordsController < ApplicationController
   # GET /records.json
   def index
     resource = current_admin ? Record : current_user.records
-    @records = resource.ransack(params[:q]).result.page(params[:page]).per(params[:perpage]).order(created_at: :desc)
+    @records = resource.ransack(params[:q]).result.includes(:record_logs).page(params[:page]).per(params[:perpage]).order(created_at: :desc)
   end
 
   # GET /records/1

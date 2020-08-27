@@ -3,4 +3,7 @@ json.status_value Record.statuses[record.status]
 json.user do
     json.partial! 'users/user', user: record.user
 end if record.user
+json.logs record.record_logs do |log|
+    json.partial! 'record_logs/record_log', record_log: log
+end
 json.url record_url(record, format: :json)

@@ -1,6 +1,6 @@
 class RecordLog < ApplicationRecord
   belongs_to :record
-  belongs_to :user
+  belongs_to :user, required: false
   enum kind: {
     refusal: -2,  # 被驳回
     cancel: -1,  # 取消申请

@@ -1,6 +1,19 @@
 <template>
   <div class="app-container">
-    <el-form label-position="right" status-icon :model="ruleForm" ref="tableForm">
+    <div class="form-toolbar">
+      <div class="left"></div>
+      <div class="right">
+        <el-input
+          placeholder="请输入姓名或手机号查询"
+          prefix-icon="el-icon-search"
+          v-model="filters.name"
+          style="width: 240px"
+          >
+        </el-input>
+        <el-button type="primary" @click="fetchData(1)">查询</el-button>
+      </div>
+    </div>
+    <el-form label-position="right" status-icon :model="ruleForm" ref="tableForm" class="user-list">
       <el-table
         v-loading="listLoading"
         :data="list"
@@ -121,10 +134,19 @@
       background
       layout="prev, pager, next"
       :page-count="pageInfo.total_page"
-      :current-page="pageInfo.current_page">
+      :current-page="pageInfo.current_page"
+      @current-change="fetchData">
     </el-pagination>
   </div>
 </template>
+
+<style lang="sass">
+.user-list {
+  .el-form-item {
+    margin-bottom: 0
+  }
+}
+</style>
 
 <script>
 import request from '../../utils/request'
@@ -137,16 +159,19 @@ export default {
     return {
       list: [],
       pageInfo: {
-        perpage: 20,
+        perpage: 10,
         current_page: null,
         pervious_page: null,
         next_page: null,
         total_page: null
       },
-      listLoading: true,
+      listLoading: false,
       ruleForm: {},
       positions: null,
-      departments: null
+      departments: null,
+      filters: {
+        name: null
+      }
     }
   },
   filters: {
@@ -158,10 +183,21 @@ export default {
     this.fetchData()
   },
   methods: {
-    fetchData() {
+    fetchData(page) {
+      if(this.listLoading) return
+      let params = {
+        perpage: this.pageInfo.perpage,
+        page: page || 1
+      }
+      if(this.filters.name && this.filters.name != '') {
+        params.q = {
+          'realname_or_mobile_cont': this.filters.name
+        }
+      }
       this.listLoading = true
       request({
-        url: basePath
+        url: basePath,
+        params
       }).then(response => {
         this.list =  response.items
         this.pageInfo = Object.assign(this.pageInfo, response.page_info)
@@ -174,7 +210,7 @@ export default {
           return
         }
       }
-      this.list.push({
+      this.list.unshift({
         realname: null,
         isNew: true,
         onEdit: true
@@ -191,7 +227,7 @@ export default {
 
       this.$refs['tableForm'].validate((valid) => {
         if(valid){
-          if(row.isNew && !row.password) row.password = row.mobile || Math.random()
+          if(row.isNew && !row.password) row.password = row.mobile || `pwd${Math.random()}`
           request({
             url: `${basePath}${row.isNew ? '' : '/' + row.id}`,
             method: row.isNew ? 'POST' : 'PATCH',

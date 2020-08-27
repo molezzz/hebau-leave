@@ -121,21 +121,22 @@ export default {
         'address',
         'begin_at',
         'end_at',
-        'cause',
-        'agent',
-        'agent_office'
+        // 'agent',
+        // 'agent_office',
+        'cause'
       ].forEach((key) => { rules[key] = [{ required: true, message: '此项不能为空'}] })
-      rules['agent_mobile'] = [
-        {
-          validator: (rule, value, callback) => {
-            if(!this.record.agent_office_tel && !this.record.agent_mobile) {
-              callback(new Error('代理人联系方式至少填写一个'))
-            } else {
-              callback()
-            }
-          }
-        }
-      ]
+      // 代管人不再必填
+      // rules['agent_mobile'] = [
+      //   {
+      //     validator: (rule, value, callback) => {
+      //       if(!this.record.agent_office_tel && !this.record.agent_mobile) {
+      //         callback(new Error('代管人联系方式至少填写一个'))
+      //       } else {
+      //         callback()
+      //       }
+      //     }
+      //   }
+      // ]
       return rules
     }
   },
