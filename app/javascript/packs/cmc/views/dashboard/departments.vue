@@ -50,6 +50,26 @@
             </template>
           </template>
         </el-table-column>
+        <el-table-column label="主管校领导" width="160" align="center">
+          
+          <template slot-scope="scope">
+            <template v-if="scope.row.onEdit">
+              <el-select v-model="scope.row.master_id" placeholder="请选择">
+                
+                <el-option
+                  v-for="(item, key) in masters"
+                  :key="key"
+                  :label="item.realname"
+                  :value="item.id">
+                </el-option>
+                
+              </el-select>
+            </template>
+            <template v-else>
+              {{ scope.row.master ? scope.row.master.realname : '-' }}
+            </template>
+          </template>
+        </el-table-column>
         <el-table-column align="center" prop="created_at" label="最后修改时间" width="250">
           <template slot-scope="scope">
             <i class="el-icon-time"/>
@@ -93,7 +113,10 @@ export default {
         edu: '教学单位',
         party: '党群部门',
         assistant: '科研教辅'
-      }
+      },
+      masters: [
+
+      ]
     }
   },
   filters: {
@@ -101,6 +124,7 @@ export default {
   },
   created() {
     this.fetchData()
+    this.loadMaster()
   },
   methods: {
     fetchData() {
@@ -112,13 +136,25 @@ export default {
         this.listLoading = false
       })
     },
+    loadMaster(){
+      request({
+        url: '/users',
+        params: {
+          q:{
+            position_name_in: ['正厅级', '副厅级']
+          }
+        }
+      }).then(response => {
+        this.masters = response.items
+      })      
+    },
     addNewItem(){
       for(var i in this.list){
         if(this.list[i].isNew){
           return
         }
       }
-      this.list.push({
+      this.list.unshift({
         name: null,
         category: 'edu',
         isNew: true,
@@ -133,7 +169,7 @@ export default {
     },
     saveItem(index){
       let row = this.list[index]
-
+      
       this.$refs['tableForm'].validate((valid) => {
         if(valid){
           request({

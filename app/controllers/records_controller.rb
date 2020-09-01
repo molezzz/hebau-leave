@@ -1,3 +1,4 @@
+require 'csv'
 class RecordsController < ApplicationController
   before_action :set_record, only: [:show, :edit, :update, :destroy, :back, :approval]
   before_action :auth_user!, except: [:show]
@@ -7,6 +8,34 @@ class RecordsController < ApplicationController
   def index
     resource = current_admin ? Record : current_user.records
     @records = resource.ransack(params[:q]).result.includes(:record_logs).page(params[:page]).per(params[:perpage]).order(created_at: :desc)
+    respond_to do |format|
+      format.json { render :index }
+      format.csv do
+        csv = CSV.generate(headers: true) do |csv|
+          csv << %w{ID 姓名 职务 部门 部门审批人 分管校领导 请假天数 事由 外出地点 开始时间 结束时间 销假时间 申请时间 状态}
+          @records.each do |record|
+            approver = record.approver_on(:superior).try(:user)
+            csv << [
+              record.id,
+              record.user.try(:job),
+              record.user.try(:realname),
+              record.user && record.user.department ? record.user.department.name : '',
+              approver.try(:realname),
+              record.user && record.user.department && record.user.department.master ? record.user.department.master.realname : '',
+              (record.end_at.to_i - record.begin_at.to_i) / (60 * 60 * 24),
+              record.cause,
+              record.address,
+              record.begin_at ? record.begin_at.strftime('%Y-%m-%d') : '',
+              record.end_at ? record.end_at.strftime('%Y-%m-%d') : '',
+              record.back_at ? record.back_at.strftime('%Y-%m-%d') : '',
+              record.created_at.strftime('%Y-%m-%d'),
+              record.status
+            ]
+          end
+        end
+        send_data csv.encode('gbk', :invalid => :replace, :undef => :replace, :replace => "?")
+      end
+    end
   end
 
   # GET /records/1

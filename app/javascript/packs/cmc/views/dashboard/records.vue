@@ -1,7 +1,29 @@
 <template>
   <div class="app-container">
     <div class="form-toolbar">
-      <div class="left"></div>
+      <div class="left">
+        <span style="margin-right: 1.5rem;color:#909399">筛选: </span>
+        <el-select v-model="filters.master_id" placeholder="请选择主管校领导">
+                  
+          <el-option
+            v-for="(item, key) in masters"
+            :key="key"
+            :label="item.realname"
+            :value="item.id">
+          </el-option>
+          
+        </el-select>
+        <el-date-picker
+          v-model="filters.dateRange"
+          type="daterange"
+          align="right"
+          unlink-panels
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions">
+        </el-date-picker>
+      </div>
       <div class="right">
         <el-input
           placeholder="请输入姓名或手机号查询"
@@ -11,6 +33,7 @@
           >
         </el-input>
         <el-button type="primary" @click="fetchData(1)">查询</el-button>
+        <el-button plain @click="exportCSV()" icon="el-icon-download">导出</el-button>
       </div>
     </div>
     <el-form label-position="right" status-icon :model="ruleForm" ref="tableForm">
@@ -35,7 +58,10 @@
         </el-table-column>
         <el-table-column label="部门" width="120" align="center">
           <template slot-scope="scope">
-            {{ scope.row.user && scope.row.user.department ? scope.row.user.department.name : '-' }}
+            {{ scope.row.user && scope.row.user.department ? scope.row.user.department.name : '-' }}<br>
+            <span v-if="scope.row.user.department  && scope.row.user.department.master">
+              （{{scope.row.user.department.master.realname}}）
+            </span>
           </template>
         </el-table-column>
         <el-table-column align="left" prop="cause" label="事由" width="120">
@@ -199,9 +225,39 @@ export default {
       ruleForm: {},
       positions: null,
       departments: null,
+      masters: [],
       filters: {
         name: null,
-        status: null
+        status: null,
+        master_id: null,
+        dateRange: null
+      },
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+            picker.$emit('pick', [start, end]);
+          }
+        }]
       }
     }
   },
@@ -210,12 +266,24 @@ export default {
   },
   created() {
     this.fetchData()
+    this.loadMaster()
   },
   methods: {
     fetchData(page) {
       if(this.listLoading) return
+      this.listLoading = true
+      request(this.buildQuery(page)).then(response => {
+        this.list =  response.items.map((item) => {
+          item.days = dayjs(item.begin_at).to(item.end_at, true)
+          return item
+        })
+        this.pageInfo = Object.assign(this.pageInfo, response.page_info)
+        this.listLoading = false
+      })
+    },
+    buildQuery(page, perpage, format){
       let params = {
-        perpage: this.pageInfo.perpage,
+        perpage: perpage || this.pageInfo.perpage,
         page: page || 1
       }
       if(this.filters.name && this.filters.name != '') {
@@ -223,17 +291,34 @@ export default {
           'user_realname_or_user_mobile_cont': this.filters.name
         }
       }
-      this.listLoading = true
-      request({
-        url: basePath,
+      if(this.filters.master_id && this.filters.master_id != 0){
+        params.q = Object.assign({
+          'user_department_master_id_eq': this.filters.master_id
+        }, params.q)
+      }
+      if(this.filters.dateRange && this.filters.dateRange.length > 0) {
+        params.q = Object.assign({
+          'begin_at_gteq': this.filters.dateRange[0],
+          'end_at_lteq': this.filters.dateRange[1]
+        }, params.q)
+      }
+      //console.log(this.filters)
+      return {
+        url: `${basePath}${format || '.json'}`,
         params
-      }).then(response => {
-        this.list =  response.items.map((item) => {
-          item.days = dayjs(item.begin_at).to(item.end_at, true)
-          return item
-        })
-        this.pageInfo = Object.assign(this.pageInfo, response.page_info)
-        this.listLoading = false
+      }
+    },
+    exportCSV(){
+      request(Object.assign(this.buildQuery(1, 1000000000, '.csv'),{responseType: 'blob'})).then((response) => {
+        console.log(response)
+        // Let the user save the file.
+        const url = window.URL.createObjectURL(new Blob([response]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.style = 'display:none'
+        link.setAttribute('download', 'records.csv'); //or any other extension
+        document.body.appendChild(link);
+        link.click();
       })
     },
     showKind(key){
@@ -286,6 +371,22 @@ export default {
           this.list[index].status = resp.status
         })
       }
+    },
+    loadMaster(){
+      request({
+        url: '/users',
+        params: {
+          q:{
+            position_name_in: ['正厅级', '副厅级']
+          }
+        }
+      }).then(response => {
+        this.masters = response.items
+        this.masters.unshift({
+          id: 0,
+          realname: '不限'
+        })
+      })      
     },
     editItem(index){
       let row = this.list[index]

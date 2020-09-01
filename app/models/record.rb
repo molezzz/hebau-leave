@@ -15,6 +15,11 @@ class Record < ApplicationRecord
 
     # ransack_alias :user, :user_realname_or_user_mobile
 
+    # 返回某一状态的审核人
+    def approver_on(kind)
+        record_logs.to_a.detect {|log| log.kind == kind.to_s }
+    end
+
     def to_pdf
         cell_padding = 11
         @pdf = Prawn::Document.new
