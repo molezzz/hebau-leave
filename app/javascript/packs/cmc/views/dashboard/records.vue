@@ -324,8 +324,8 @@ export default {
     showKind(key){
       let m = {
         'refusal': '未批准',
-        'superior': '校领导审批',
-        'college': '单位领导审批',
+        'superior': '部门负责人审批',
+        'college': '校领导审批',
         'cancel': '取消',
         'filing': '组织部备案'
       }

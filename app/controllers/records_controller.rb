@@ -158,6 +158,6 @@ class RecordsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def record_params
-      params.require(:record).permit(:user_id, :approver_id, :status, :begin_at, :end_at, :address, :tel, :cause, :agent, :agent_office, :agent_office_tel, :agent_mobile, :back_at, :unit_opinion, :leader_opinion, :remark, :back_lat, :back_lon)
+      params.require(:record).permit(:user_id, :approver_id, :status, :begin_at, :end_at, :address, :tel, :cause, :agent, :agent_office, :agent_office_tel, :agent_mobile, :back_at, :unit_opinion, :leader_opinion, :remark, :back_lat, :back_lon, :travel)
     end
 end

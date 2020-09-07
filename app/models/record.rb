@@ -11,7 +11,7 @@ class Record < ApplicationRecord
         filing: 3     # 组织部备案
     }
 
-    store :exdata, accessors: [:unit_opinion, :leader_opinion,:remark, :back_lat, :back_lon], coder: JSON
+    store :exdata, accessors: [:unit_opinion, :leader_opinion,:remark, :back_lat, :back_lon, :travel], coder: JSON
 
     # ransack_alias :user, :user_realname_or_user_mobile
 
