@@ -13,6 +13,16 @@
           </el-option>
           
         </el-select>
+        <el-select v-model="filters.department_id" placeholder="请选择部门">
+                  
+          <el-option
+            v-for="(item, key) in departments"
+            :key="key"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+          
+        </el-select>
         <el-date-picker
           v-model="filters.dateRange"
           type="daterange"
@@ -226,11 +236,13 @@ export default {
       positions: null,
       departments: null,
       masters: [],
+      departments: [],
       filters: {
         name: null,
         status: null,
         master_id: null,
-        dateRange: null
+        dateRange: null,
+        department_id: null
       },
       pickerOptions: {
         shortcuts: [{
@@ -267,6 +279,7 @@ export default {
   created() {
     this.fetchData()
     this.loadMaster()
+    this.loadDepartment()
   },
   methods: {
     fetchData(page) {
@@ -294,6 +307,11 @@ export default {
       if(this.filters.master_id && this.filters.master_id != 0){
         params.q = Object.assign({
           'user_department_master_id_eq': this.filters.master_id
+        }, params.q)
+      }
+      if(this.filters.department_id && this.filters.department_id != 0){
+        params.q = Object.assign({
+          'user_department_id_eq': this.filters.department_id
         }, params.q)
       }
       if(this.filters.dateRange && this.filters.dateRange.length > 0) {
@@ -385,6 +403,17 @@ export default {
         this.masters.unshift({
           id: 0,
           realname: '不限'
+        })
+      })      
+    },
+    loadDepartment(){
+      request({
+        url: '/departments'
+      }).then(response => {
+        this.departments = response || []
+        this.departments.unshift({
+          id: 0,
+          name: '不限'
         })
       })      
     },
