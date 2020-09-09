@@ -160,7 +160,7 @@ export default {
         isNew: true,
         onEdit: true
       })
-      this.setEditRow(this.list[this.list.length - 1])
+      this.setEditRow(this.list[0])
     },
     editItem(index){
       let row = this.list[index]

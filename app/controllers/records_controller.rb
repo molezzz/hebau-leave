@@ -12,7 +12,7 @@ class RecordsController < ApplicationController
       format.json { render :index }
       format.csv do
         csv = CSV.generate(headers: true) do |csv|
-          csv << %w{ID 姓名 职务 部门 部门审批人 分管校领导 请假天数 事由 外出地点 开始时间 结束时间 销假时间 申请时间 交通工具及行程 状态}
+          csv << %w{ID 姓名 职务 部门 部门审批人 审批校领导 请假天数 事由 外出地点 开始时间 结束时间 销假时间 申请时间 交通工具及行程 状态}
           @records.each do |record|
             approver = record.approver_on(:superior).try(:user)
             csv << [
@@ -21,7 +21,8 @@ class RecordsController < ApplicationController
               record.user.try(:realname),
               record.user && record.user.department ? record.user.department.name : '',
               approver.try(:realname),
-              record.user && record.user.department && record.user.department.master ? record.user.department.master.realname : '',
+              record.approver_on(:college).try(:user).try(:realname),
+              # record.user && record.user.department && record.user.department.master ? record.user.department.master.realname : '',
               (record.end_at.to_i - record.begin_at.to_i) / (60 * 60 * 24),
               record.cause,
               record.address,
