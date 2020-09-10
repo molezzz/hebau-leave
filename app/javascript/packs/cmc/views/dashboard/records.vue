@@ -61,7 +61,7 @@
         </el-table-column>
         <el-table-column label="姓名/职务" align="left" width="160">
           <template slot-scope="scope">
-            <p>{{ scope.row.user.realname }}</p>
+            <p>{{ scope.row.user ? scope.row.user.realname : '' }}</p>
             <p><i class="el-icon-phone-outline"></i> {{ scope.row.user.mobile }}</p>
             <p><i class="el-icon-service"></i> {{ scope.row.user.job }}</p>
           </template>
