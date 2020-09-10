@@ -62,14 +62,14 @@
         <el-table-column label="姓名/职务" align="left" width="160">
           <template slot-scope="scope">
             <p>{{ scope.row.user ? scope.row.user.realname : '' }}</p>
-            <p><i class="el-icon-phone-outline"></i> {{ scope.row.user.mobile }}</p>
-            <p><i class="el-icon-service"></i> {{ scope.row.user.job }}</p>
+            <p><i class="el-icon-phone-outline"></i> {{ scope.row.user ? scope.row.user.mobile : '' }}</p>
+            <p><i class="el-icon-service"></i> {{ scope.row.user ? scope.row.user.job : '' }}</p>
           </template>
         </el-table-column>
         <el-table-column label="部门" width="120" align="center">
           <template slot-scope="scope">
             {{ scope.row.user && scope.row.user.department ? scope.row.user.department.name : '-' }}<br>
-            <span v-if="scope.row.user.department  && scope.row.user.department.master">
+            <span v-if="scope.row.user && scope.row.user.department  && scope.row.user.department.master">
               （{{scope.row.user.department.master.realname}}）
             </span>
           </template>
