@@ -93,7 +93,7 @@ class Record < ApplicationRecord
 
     def back_as_human
         back_time = back_at ? back_at.strftime('%Y-%m-%d %H:%M') : ''
-        if back_at && back_at <= end_at
+        if back_at && back_at <= end_at + 1.day
             "按期销假 #{back_time}"
         elsif back_at && back_at > end_at + 1.day
             "超期销假 #{back_time}"
