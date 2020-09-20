@@ -77,7 +77,7 @@ class Record < ApplicationRecord
             [th('备注',{valign: :center}),@pdf.make_cell(remark_table,{colspan: 3,height: 100})]
         ],column_widths: [100,170,100,170], cell_style: { padding: cell_padding }, position: :center)
         @pdf.move_down 12
-        @pdf.text '注：此表一式两份，一份作为财务处经费报销依据；一份交组织部登记备案。', align: :center, size: 14
+        # @pdf.text '注：此表一式两份，一份作为财务处经费报销依据；一份交组织部登记备案。', align: :center, size: 14
         data = @pdf.render
         File.delete(qr_file) if File.exist?(qr_file)
         data
@@ -92,12 +92,13 @@ class Record < ApplicationRecord
     end
 
     def back_as_human
+        back_time = back_at ? back_at.strftime('%Y-%m-%d %H:%M') : ''
         if back_at && back_at <= end_at
-            "按期销假"
+            "按期销假 #{back_time}"
         elsif back_at && back_at > end_at
-            "超期销假"
+            "超期销假 #{back_time}"
         elsif !back_at && Time.now > end_at
-            "超期未销假"
+            "超期未销假 #{back_time}"
         else
             ''
         end

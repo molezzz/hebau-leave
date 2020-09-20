@@ -23,7 +23,7 @@ class RecordsController < ApplicationController
               approver.try(:realname),
               record.approver_on(:college).try(:user).try(:realname),
               # record.user && record.user.department && record.user.department.master ? record.user.department.master.realname : '',
-              (record.end_at.to_i - record.begin_at.to_i) / (60 * 60 * 24),
+              (record.end_at.to_i - record.begin_at.to_i) / (60 * 60 * 24) + 1,
               record.cause,
               record.address,
               record.begin_at ? record.begin_at.strftime('%Y-%m-%d') : '',
