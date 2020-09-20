@@ -95,7 +95,7 @@ class Record < ApplicationRecord
         back_time = back_at ? back_at.strftime('%Y-%m-%d %H:%M') : ''
         if back_at && back_at <= end_at
             "按期销假 #{back_time}"
-        elsif back_at && back_at > end_at
+        elsif back_at && back_at > end_at + 1.day
             "超期销假 #{back_time}"
         elsif !back_at && Time.now > end_at
             "超期未销假 #{back_time}"
