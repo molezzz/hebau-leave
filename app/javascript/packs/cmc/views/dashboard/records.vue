@@ -53,7 +53,9 @@
         element-loading-text="Loading"
         border
         fit
-        highlight-current-row>
+        highlight-current-row
+        @expand-change="getAddress"
+        >
         <el-table-column align="center" label="ID" width="60">
           <template slot-scope="scope">
             {{ scope.row.id }}
@@ -118,10 +120,10 @@
         </el-table-column>
         <el-table-column label="销假" align="center">
           <template slot-scope="scope">
-            <template v-if="scope.row.back_at && scope.row.back_at <= scope.row.end_at">
+            <template v-if="scope.row.back_at && !isOverTime(scope.row)">
               <el-tag type="success">按期销假</el-tag>
             </template>
-            <template v-if="scope.row.back_at && scope.row.back_at > scope.row.end_at">
+            <template v-if="scope.row.back_at && isOverTime(scope.row)">
               <el-tag type="warning">超期销假</el-tag>
             </template>
             <template v-if="!scope.row.back_at && (today > dateToInt(scope.row.end_at))">
@@ -153,6 +155,9 @@
               <el-form-item label="外出事由">
                 <span>{{ props.row.cause }}</span>
               </el-form-item>
+              <el-form-item label="外出方式">
+                <span>{{ props.row.travel }}</span>
+              </el-form-item>
               <el-form-item label="代管人">
                 <span>{{ props.row.agent }}</span>
               </el-form-item>
@@ -167,6 +172,9 @@
               </el-form-item>
               <el-form-item label="销假时间">
                 <span>{{ props.row.back_at | dateFormat}}</span>
+              </el-form-item>
+              <el-form-item label="销假地点">
+                <span>{{ address[props.row.id] }}</span>
               </el-form-item>
               <el-form-item label="备注">
                 <span>{{ props.row.remark }}</span>
@@ -219,11 +227,35 @@ dayjs.extend(relativeTime)
 dayjs.locale('zh-cn')
 const basePath = '/records'
 
+const pointToAddress = function(lng,lat){
+  return new Promise((resolve, reject) => {
+    AMap.plugin('AMap.Geocoder', function() {
+      let geocoder = new AMap.Geocoder({
+        // city 指定进行编码查询的城市，支持传入城市名、adcode 和 citycode
+        // city: '010'
+      })
+    
+      let lnglat = [lng, lat]
+
+      geocoder.getAddress(lnglat, function(status, result) {
+        if (status === 'complete' && result.info === 'OK') {
+          // result为对应的地理位置详细信息
+          console.log(result)
+          resolve(result.regeocode)
+        } else {
+          reject(result)
+        }
+      })
+    })
+  })
+}
+
 export default {
   data() {
     return {
       list: [],
       today: dayjs().unix(),
+      address: {},
       pageInfo: {
         perpage: 5,
         current_page: null,
@@ -294,6 +326,28 @@ export default {
         this.listLoading = false
       })
     },
+    async getAddress(row){
+      if(!row) return '-'
+      if(this.address[row.id]){
+        return this.address[row.id]
+      }
+      if(!row.back_lat || !row.back_lon) {
+        return '-'
+      }
+      try {
+        let result = await pointToAddress(row.back_lon, row.back_lat)
+        let data  =  {
+          lat: row.back_lat,
+          lng: row.back_lon,
+          name: result.formattedAddress
+        }
+        this.$set(this.address, row.id, `${data.name} (${data.lat},${data.lng})`)
+        return this.address[row.id]
+      } catch (e) {
+        console.error(e)
+        return '-'
+      }
+    },
     buildQuery(page, perpage, format){
       let params = {
         perpage: perpage || this.pageInfo.perpage,
@@ -305,8 +359,11 @@ export default {
         }
       }
       if(this.filters.master_id && this.filters.master_id != 0){
+        // params.q = Object.assign({
+        //   'user_department_master_id_eq': this.filters.master_id
+        // }, params.q)
         params.q = Object.assign({
-          'user_department_master_id_eq': this.filters.master_id
+          'record_logs_user_id_eq': this.filters.master_id
         }, params.q)
       }
       if(this.filters.department_id && this.filters.department_id != 0){
@@ -338,6 +395,10 @@ export default {
         document.body.appendChild(link);
         link.click();
       })
+    },
+    isOverTime(row){
+      let endTime = dayjs(row.end_at).add(1, 'day')
+      return dayjs(row.back_at).isAfter(endTime)
     },
     showKind(key){
       let m = {
