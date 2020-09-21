@@ -25,4 +25,4 @@ Things you may want to cover:
 
 # 生成环境启动
 # 编译webpacker
-# docker-compose run --rm production bin/rails webpacker:compile
+# docker-compose run --rm production /var/leave/bin/bundle exec rails webpacker:compile

@@ -4589,6 +4589,16 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+jsrsasign-util@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npm.taobao.org/jsrsasign-util/download/jsrsasign-util-1.0.0.tgz#ce94ec1aa119c39134c967ae784f838f2e2903e6"
+  integrity sha1-zpTsGqEZw5E0yWeueE+Djy4pA+Y=
+
+jsrsasign@^9.1.9:
+  version "9.1.9"
+  resolved "https://registry.npm.taobao.org/jsrsasign/download/jsrsasign-9.1.9.tgz#62f44eb2766264f0bfaffd87b8ade05ee4563347"
+  integrity sha1-YvROsnZiZPC/r/2HuK3gXuRWM0c=
+
 killable@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/killable/-/killable-1.0.1.tgz#4c8ce441187a061c7474fb87ca08e2a638194892"

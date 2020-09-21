@@ -3,19 +3,30 @@ import { Message, MessageBox } from 'element-ui'
 import store from '../store'
 import { getToken } from './auth'
 import Qs from 'qs'
+import rs from 'jsrsasign'
+
+let header = {alg: 'HS256', typ: 'JWT'}
+let payload = {}
+payload.iat = rs.jws.IntDate.get('now')
+payload.exp = rs.jws.IntDate.get('now + 1year')
+payload.jti = `rid-${Math.ceil(Math.random() * 100000)}`
+
+let jwt = rs.jws.JWS.sign('HS256', JSON.stringify(header) , JSON.stringify(payload), 'hebau-weapp')
 
 // 创建axios实例
 const service = axios.create({
   baseURL: process.env.BASE_API, // api 的 base_url
   timeout: 50000, // 请求超时时间
   headers: {
-    'Accept': 'application/json'
+    'Accept': 'application/json',
+    'x-acc-token': jwt
   }
 })
 
 // request拦截器
 service.interceptors.request.use(
   config => {
+
     if (store.getters.token) {
       config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     }

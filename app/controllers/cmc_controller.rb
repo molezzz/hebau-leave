@@ -1,5 +1,6 @@
 class CmcController < ApplicationController
     before_action :authenticate_admin, except: [:index]
+    skip_before_action :verify_request
 
     def logout
         render json: {success: true}
