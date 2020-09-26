@@ -56,7 +56,7 @@ class RecordsController < ApplicationController
     # 默认本月
     month = current_user.records.where('begin_at > ?', Time.now.beginning_of_month).where('begin_at < ?', Time.now.end_of_month).where('status >= ?', 0).count
     total = current_user.records.where('status > ?', 0).count
-    unback = current_user.records.where('status > ?', 1).where('back_at is null').count
+    unback = unback_count
     render json: {
       total: total,
       month: month,
@@ -97,6 +97,14 @@ class RecordsController < ApplicationController
   # POST /records
   # POST /records.json
   def create
+    count = unback_count
+    if count > 0
+      render json: {
+        message: "您还有#{count}次外出没有销假，不能发起新的外出申请！请您首先完成销假。"
+      }, status: :forbidden
+      return
+    end
+    
     @record = @user.records.new(record_params)
 
     respond_to do |format|
@@ -156,6 +164,11 @@ class RecordsController < ApplicationController
 
     def set_user
       @user = current_admin ? User.find(params[:user_id]) : current_user
+    end
+
+    # 未销假统计
+    def unback_count
+      current_user.records.where('status > ?', 1).where('back_at is null').where('end_at < NOW()').count
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
