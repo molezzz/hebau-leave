@@ -13,6 +13,16 @@
           </el-option>
           
         </el-select>
+        <el-select v-model="filters.approver_id" placeholder="请选择审批校领导">
+                  
+          <el-option
+            v-for="(item, key) in masters"
+            :key="key"
+            :label="item.realname"
+            :value="item.id">
+          </el-option>
+          
+        </el-select>
         <el-select v-model="filters.department_id" placeholder="请选择部门">
                   
           <el-option
@@ -274,7 +284,8 @@ export default {
         status: null,
         master_id: null,
         dateRange: null,
-        department_id: null
+        department_id: null,
+        approver_id: null
       },
       pickerOptions: {
         shortcuts: [{
@@ -359,11 +370,13 @@ export default {
         }
       }
       if(this.filters.master_id && this.filters.master_id != 0){
-        // params.q = Object.assign({
-        //   'user_department_master_id_eq': this.filters.master_id
-        // }, params.q)
         params.q = Object.assign({
-          'record_logs_user_id_eq': this.filters.master_id
+          'user_department_master_id_eq': this.filters.master_id
+        }, params.q)
+      }
+      if(this.filters.approver_id && this.filters.approver_id != 0){
+        params.q = Object.assign({
+          'record_logs_user_id_eq': this.filters.approver_id
         }, params.q)
       }
       if(this.filters.department_id && this.filters.department_id != 0){

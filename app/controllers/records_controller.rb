@@ -67,8 +67,8 @@ class RecordsController < ApplicationController
   # 销假
   def back
     if @record.user.id == current_user.id
-      
-      if @record.update(record_params.merge(back_at: Time.now))
+      data = params.permit(record: [:back_lat, :back_lon])[:record]
+      if @record.update(data.merge(back_at: Time.now))
         render :show
       else
         render json: { error: 'record_save_error', message: '销假失败'}, status: :not_acceptable
