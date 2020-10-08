@@ -168,7 +168,7 @@ class RecordsController < ApplicationController
 
     # 未销假统计
     def unback_count
-      current_user.records.where('status > ?', 1).where('back_at is null').where('end_at < NOW()').count
+      current_user.records.where('status > ?', 0).where('back_at is null').where('end_at < NOW()').count
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
