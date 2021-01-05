@@ -31,5 +31,6 @@ module HebauLeave
     config.generators.system_tests = nil
     config.time_zone = 'Beijing'
     config.active_record.default_timezone = :local
+    config.i18n.default_locale = :'zh-CN'
   end
 end

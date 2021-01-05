@@ -7,18 +7,20 @@ class RecordsController < ApplicationController
   # GET /records.json
   def index
     resource = current_admin ? Record : current_user.records
-    @records = resource.ransack(params[:q]).result.includes(:record_logs).page(params[:page]).per(params[:perpage]).order(created_at: :desc)
+    positions = Hash[Position.all.collect{|pos| [pos.id, pos.name]}]
+    @records = resource.ransack(params[:q]).result.includes([:user,:record_logs]).page(params[:page]).per(params[:perpage]).order(created_at: :desc)
     respond_to do |format|
       format.json { render :index }
       format.csv do
         csv = CSV.generate(headers: true) do |csv|
-          csv << %w{ID 姓名 职务 部门 部门审批人 审批校领导 请假天数 事由 外出地点 开始时间 结束时间 销假时间 申请时间 交通工具及行程 状态}
+          csv << %w{ID 姓名 职务 级别 部门 部门审批人 审批校领导 请假天数 事由 外出地点 开始时间 开始星期 结束时间 结束星期 销假时间 销假星期 申请时间 交通工具及行程 状态}
           @records.each do |record|
             approver = record.approver_on(:superior).try(:user)
             csv << [
               record.id,
-              record.user.try(:job),
               record.user.try(:realname),
+              record.user.try(:job),
+              positions[record.user.position_id] || '',
               record.user && record.user.department ? record.user.department.name : '',
               approver.try(:realname),
               record.approver_on(:college).try(:user).try(:realname),
@@ -27,8 +29,11 @@ class RecordsController < ApplicationController
               record.cause,
               record.address,
               record.begin_at ? record.begin_at.strftime('%Y-%m-%d') : '',
+              record.begin_at ? I18n.l(record.begin_at, format: '%A') : '',
               record.end_at ? record.end_at.strftime('%Y-%m-%d') : '',
-              record.back_at ? record.back_at.strftime('%Y-%m-%d') : '',
+              record.end_at ? I18n.l(record.end_at, format: '%A') : '',
+              record.back_at ? record.back_at.strftime('%Y-%m-%d ') : '',
+              record.back_at ? I18n.l(record.back_at, format: '%A') : '',
               record.created_at.strftime('%Y-%m-%d'),
               record.travel,
               record.status

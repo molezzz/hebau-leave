@@ -24,5 +24,7 @@ Things you may want to cover:
 * ...
 
 # 生成环境启动
+# yarn
+# docker-compose run --rm production /var/leave/bin/bundle exec yarn install
 # 编译webpacker
 # docker-compose run --rm production /var/leave/bin/bundle exec rails webpacker:compile
