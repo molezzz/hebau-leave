@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "@rails/webpacker": "https://github.com/rails/webpacker.git",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-syntax-jsx": "^6.18.0",
