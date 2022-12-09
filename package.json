@@ -20,7 +20,7 @@
     "normalize.css": "^8.0.1",
     "nprogress": "^0.2.0",
     "postcss-cssnext": "^3.1.0",
-    "qs": "^6.9.1",
+    "qs": "^6.9.7",
     "svg-sprite-loader": "3.8.0",
     "svgo": "1.0.5",
     "url-loader": "1.0.1",
